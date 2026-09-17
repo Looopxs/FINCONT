@@ -15,11 +15,13 @@ import {
   CheckCircle2,
   TrendingUp,
 } from "lucide-react";
+import { useAuth } from "@/lib/auth/auth-context";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("demo@fincont.pe");
-  const [password, setPassword] = useState("admin123");
+  const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -35,20 +37,28 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
 
-    // Simulate instant secure auth
+    const res = login(email, password);
+    if (!res.success) {
+      setLoading(false);
+      setError(res.error || "Credenciales inválidas.");
+      return;
+    }
+
     setTimeout(() => {
       setLoading(false);
       router.push("/dashboard");
-    }, 600);
+    }, 400);
   };
 
   const handleQuickDemo = () => {
     setEmail("demo@fincont.pe");
     setPassword("admin123");
     setLoading(true);
+    login("demo@fincont.pe", "admin123");
     setTimeout(() => {
+      setLoading(false);
       router.push("/dashboard");
-    }, 500);
+    }, 400);
   };
 
   return (

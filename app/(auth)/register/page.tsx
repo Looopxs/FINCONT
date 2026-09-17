@@ -22,9 +22,11 @@ import {
   CreditCard,
 } from "lucide-react";
 import { lookupDocument } from "@/lib/services/reniec-sunat-service";
+import { useAuth } from "@/lib/auth/auth-context";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { registerUserAndCompany } = useAuth();
   const [step, setStep] = useState<1 | 2>(1);
   const [loading, setLoading] = useState(false);
 
@@ -117,39 +119,32 @@ export default function RegisterPage() {
       return;
     }
 
-    // Build user and company profiles
-    const initials = (
-      (userForm.name?.[0] || "U") + (userForm.lastName?.[0] || "P")
-    ).toUpperCase();
-
-    const finalUser = {
-      id: "usr-" + Date.now(),
-      name: userForm.name.trim() || "Usuario",
-      lastName: userForm.lastName.trim() || "",
-      email: userForm.email.trim(),
-      role: "ADMINISTRADOR",
-      avatarInitials: initials,
-    };
-
-    const finalCompany = {
-      id: "comp-" + Date.now(),
-      legalName: companyForm.legalName.trim(),
-      commercialName: companyForm.commercialName?.trim() || companyForm.legalName.trim(),
-      taxId: companyForm.taxId.trim(),
-      address: companyForm.address.trim(),
-      phone: companyForm.phone.trim(),
-      email: companyForm.email.trim(),
-      currency: companyForm.currency || "PEN",
-      currencySymbol: companyForm.currency === "USD" ? "$" : "S/",
-      accountingPeriod: companyForm.accountingPeriod.trim() || "2025 - Diciembre",
-    };
+    setLoading(true);
+    setError("");
 
     try {
-      localStorage.setItem("fincont_user", JSON.stringify(finalUser));
-      localStorage.setItem("fincont_company", JSON.stringify(finalCompany));
-      window.dispatchEvent(new Event("fincont_auth_updated"));
+      registerUserAndCompany(
+        {
+          name: userForm.name.trim() || "Usuario",
+          lastName: userForm.lastName.trim() || "",
+          email: userForm.email.trim(),
+          role: "ADMINISTRADOR",
+        },
+        {
+          legalName: companyForm.legalName.trim(),
+          commercialName: companyForm.commercialName?.trim() || companyForm.legalName.trim(),
+          taxId: companyForm.taxId.trim(),
+          address: companyForm.address.trim(),
+          phone: companyForm.phone.trim(),
+          email: companyForm.email.trim(),
+          currency: (companyForm.currency as "PEN" | "USD") || "PEN",
+          currencySymbol: companyForm.currency === "USD" ? "$" : "S/",
+          accountingPeriod: companyForm.accountingPeriod.trim() || "2025 - Diciembre",
+        },
+        userForm.password
+      );
     } catch (err) {
-      console.error("Error saving auth data:", err);
+      console.error("Error registering account:", err);
     }
 
     setTimeout(() => {

@@ -24,13 +24,11 @@ export interface CompanyProfile {
   accountingPeriod: string;
 }
 
-interface AuthContextType {
-  user: UserProfile | null;
+export interface RegisteredAccount {
+  email: string;
+  password?: string;
+  user: UserProfile;
   company: CompanyProfile;
-  isAuthenticated: boolean;
-  login: (email: string, pass: string) => boolean;
-  logout: () => void;
-  registerUserAndCompany: (user: Partial<UserProfile>, comp: Partial<CompanyProfile>) => void;
 }
 
 const DEFAULT_COMPANY: CompanyProfile = {
@@ -55,6 +53,74 @@ const DEFAULT_USER: UserProfile = {
   avatarInitials: "JM",
 };
 
+const DEFAULT_ACCOUNTS: RegisteredAccount[] = [
+  {
+    email: "demo@fincont.pe",
+    password: "admin123",
+    user: DEFAULT_USER,
+    company: DEFAULT_COMPANY,
+  },
+  {
+    email: "cristhianpuescas@gmail.com",
+    password: "admin",
+    user: {
+      id: "usr-cp",
+      name: "Cristhian",
+      lastName: "Puescas",
+      email: "cristhianpuescas@gmail.com",
+      role: "ADMINISTRADOR",
+      avatarInitials: "CP",
+    },
+    company: DEFAULT_COMPANY,
+  },
+];
+
+const getStoredAccounts = (): RegisteredAccount[] => {
+  if (typeof window === "undefined") return DEFAULT_ACCOUNTS;
+  try {
+    const raw = localStorage.getItem("fincont_accounts");
+    if (!raw) {
+      localStorage.setItem("fincont_accounts", JSON.stringify(DEFAULT_ACCOUNTS));
+      return DEFAULT_ACCOUNTS;
+    }
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : DEFAULT_ACCOUNTS;
+  } catch {
+    return DEFAULT_ACCOUNTS;
+  }
+};
+
+const saveAccount = (account: RegisteredAccount) => {
+  if (typeof window === "undefined") return;
+  try {
+    const accounts = getStoredAccounts();
+    const index = accounts.findIndex(
+      (a) => a.email.toLowerCase() === account.email.trim().toLowerCase()
+    );
+    if (index >= 0) {
+      accounts[index] = account;
+    } else {
+      accounts.push(account);
+    }
+    localStorage.setItem("fincont_accounts", JSON.stringify(accounts));
+  } catch (err) {
+    console.error("Error saving account to fincont_accounts:", err);
+  }
+};
+
+interface AuthContextType {
+  user: UserProfile | null;
+  company: CompanyProfile;
+  isAuthenticated: boolean;
+  login: (email: string, pass?: string) => { success: boolean; error?: string };
+  logout: () => void;
+  registerUserAndCompany: (
+    user: Partial<UserProfile>,
+    comp: Partial<CompanyProfile>,
+    password?: string
+  ) => void;
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -66,8 +132,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const savedUser = localStorage.getItem("fincont_user");
         const savedCompany = localStorage.getItem("fincont_company");
-        if (savedUser) setUser(JSON.parse(savedUser));
-        if (savedCompany) setCompany(JSON.parse(savedCompany));
+        if (savedUser) {
+          setUser(JSON.parse(savedUser));
+        } else {
+          setUser(DEFAULT_USER);
+        }
+        if (savedCompany) {
+          setCompany(JSON.parse(savedCompany));
+        } else {
+          setCompany(DEFAULT_COMPANY);
+        }
       } catch {
         // ignore
       }
@@ -87,33 +161,77 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  const login = (email: string) => {
+  const login = (email: string, pass?: string): { success: boolean; error?: string } => {
+    const cleanEmail = email.trim().toLowerCase();
+    const accounts = getStoredAccounts();
+    const found = accounts.find((a) => a.email.toLowerCase() === cleanEmail);
+
+    if (found) {
+      // Validate password if configured and passed
+      if (pass && found.password && found.password !== pass) {
+        return { success: false, error: "Contraseña incorrecta." };
+      }
+      setUser(found.user);
+      setCompany(found.company);
+      localStorage.setItem("fincont_user", JSON.stringify(found.user));
+      localStorage.setItem("fincont_company", JSON.stringify(found.company));
+      window.dispatchEvent(new Event("fincont_auth_updated"));
+      return { success: true };
+    }
+
+    // If account not registered in list, derive user dynamically from email
+    const prefix = cleanEmail.split("@")[0] || "Usuario";
+    const formattedName = prefix.charAt(0).toUpperCase() + prefix.slice(1);
+    const initials = (formattedName.slice(0, 2) || "US").toUpperCase();
     const newUser: UserProfile = {
       id: "usr-" + Date.now(),
-      name: email.split("@")[0].toUpperCase(),
-      lastName: "Administrador",
-      email: email,
+      name: formattedName,
+      lastName: "Usuario",
+      email: email.trim(),
       role: "ADMINISTRADOR",
-      avatarInitials: email.substring(0, 2).toUpperCase(),
+      avatarInitials: initials,
     };
+
+    const newComp = DEFAULT_COMPANY;
+    saveAccount({
+      email: cleanEmail,
+      password: pass || "",
+      user: newUser,
+      company: newComp,
+    });
+
     setUser(newUser);
+    setCompany(newComp);
     localStorage.setItem("fincont_user", JSON.stringify(newUser));
-    return true;
+    localStorage.setItem("fincont_company", JSON.stringify(newComp));
+    window.dispatchEvent(new Event("fincont_auth_updated"));
+    return { success: true };
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem("fincont_user");
+    window.dispatchEvent(new Event("fincont_auth_updated"));
   };
 
-  const registerUserAndCompany = (newUser: Partial<UserProfile>, newComp: Partial<CompanyProfile>) => {
+  const registerUserAndCompany = (
+    newUser: Partial<UserProfile>,
+    newComp: Partial<CompanyProfile>,
+    password?: string
+  ) => {
+    const name = newUser.name?.trim() || "Usuario";
+    const lastName = newUser.lastName?.trim() || "";
+    const initials = (
+      (name[0] || "U") + (lastName[0] || name[1] || "P")
+    ).toUpperCase();
+
     const finalUser: UserProfile = {
       id: "usr-" + Date.now(),
-      name: newUser.name || "Usuario",
-      lastName: newUser.lastName || "Demo",
-      email: newUser.email || "usuario@fincont.pe",
+      name,
+      lastName,
+      email: newUser.email?.trim() || "usuario@fincont.pe",
       role: "ADMINISTRADOR",
-      avatarInitials: ((newUser.name?.[0] || "U") + (newUser.lastName?.[0] || "D")).toUpperCase(),
+      avatarInitials: initials,
     };
 
     const finalComp: CompanyProfile = {
@@ -122,10 +240,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       id: "comp-" + Date.now(),
     };
 
+    saveAccount({
+      email: finalUser.email.toLowerCase(),
+      password: password || "",
+      user: finalUser,
+      company: finalComp,
+    });
+
     setUser(finalUser);
     setCompany(finalComp);
     localStorage.setItem("fincont_user", JSON.stringify(finalUser));
     localStorage.setItem("fincont_company", JSON.stringify(finalComp));
+    window.dispatchEvent(new Event("fincont_auth_updated"));
   };
 
   return (
