@@ -31,6 +31,7 @@ export async function POST(req: Request) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${apiKey}`,
         },
+        signal: AbortSignal.timeout(4500),
         body: JSON.stringify({
           model: "gpt-4o-mini",
           messages: [
