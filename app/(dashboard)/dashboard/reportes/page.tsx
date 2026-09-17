@@ -187,26 +187,27 @@ export default function ReportesPage() {
       )}
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-slate-900">Estados Financieros y Reportes SUNAT</h1>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700">
-              NIIF para PYMES • SUNAT
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Estados Financieros y Reportes SUNAT</h1>
+            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-blue-50 text-blue-700">
+              NIIF • SUNAT
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Información financiera consolidada en tiempo real para Libertad S.A. (RUC: 20304050601)
+          <p className="text-xs text-slate-500 mt-0.5">
+            Información financiera consolidada para Libertad S.A. (RUC: 20304050601)
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
           <button
             onClick={handleDownloadDossier}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm shadow-blue-500/20 transition-all hover:shadow-md"
+            className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm shadow-blue-500/20 transition-all hover:shadow-md active:scale-95 shrink-0"
           >
-            <Download className="w-4 h-4" />
-            <span>Descargar Dossier Completo (PDF / HTML)</span>
+            <Download className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Descargar Dossier Completo (PDF / HTML)</span>
+            <span className="sm:hidden">Descargar Dossier</span>
           </button>
         </div>
       </div>
@@ -504,69 +505,70 @@ export default function ReportesPage() {
 
       {/* TAB 4: LIBROS ELECTRÓNICOS SUNAT (PLE) */}
       {activeReportTab === "sunat" && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4">
           {[
             {
               code: "PLE 14.1",
               name: "Registro de Ventas e Ingresos",
               fileName: "LE2030405060120251200140100001111.TXT",
-              status: "Generado y Validado",
+              status: "Validado",
             },
             {
               code: "PLE 8.1",
               name: "Registro de Compras",
               fileName: "LE2030405060120251200080100001111.TXT",
-              status: "Generado y Validado",
+              status: "Validado",
             },
             {
               code: "PLE 1.1",
-              name: "Libro Caja y Bancos - Detalle Efectivo",
+              name: "Libro Caja y Bancos - Efectivo",
               fileName: "LE2030405060120251200010100001111.TXT",
-              status: "Generado y Validado",
+              status: "Validado",
             },
             {
               code: "PLE 1.2",
-              name: "Libro Caja y Bancos - Cuentas Corrientes",
+              name: "Libro Caja y Bancos - Bancos",
               fileName: "LE2030405060120251200010200001111.TXT",
-              status: "Generado y Validado",
+              status: "Validado",
             },
             {
               code: "PLE 5.1",
               name: "Libro Diario PCGE",
               fileName: "LE2030405060120251200050100001111.TXT",
-              status: "Generado y Validado",
+              status: "Validado",
             },
             {
               code: "PLE 6.1",
               name: "Libro Mayor",
               fileName: "LE2030405060120251200060100001111.TXT",
-              status: "Generado y Validado",
+              status: "Validado",
             },
           ].map((item) => (
             <div
               key={item.code}
-              className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-3 flex flex-col justify-between"
+              className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs space-y-2.5 flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-mono text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md">
+                  <span className="font-mono text-[10px] sm:text-xs font-bold text-amber-700 bg-amber-50 px-1.5 sm:px-2 py-0.5 rounded-md">
                     {item.code}
                   </span>
-                  <span className="text-[10px] font-bold text-emerald-600 flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    {item.status}
+                  <span className="text-[9px] sm:text-[10px] font-bold text-emerald-600 flex items-center gap-0.5">
+                    <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                    <span className="hidden sm:inline">Generado y </span>{item.status}
                   </span>
                 </div>
-                <h4 className="text-sm font-bold text-slate-900 mt-2">{item.name}</h4>
-                <p className="text-[11px] font-mono text-slate-400 mt-1 truncate">{item.fileName}</p>
+                <h4 className="text-xs sm:text-sm font-bold text-slate-900 mt-1 line-clamp-2">{item.name}</h4>
+                <p className="text-[9px] sm:text-[11px] font-mono text-slate-400 mt-0.5 truncate">{item.fileName}</p>
               </div>
 
               <button
                 onClick={() => handleDownloadPLE(item.code, item.fileName)}
-                className="w-full py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                className="w-full py-1.5 sm:py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1 sm:gap-1.5 transition-colors active:scale-95"
               >
-                <Download className="w-3.5 h-3.5" />
-                <span>Descargar Archivo PLE (.TXT)</span>
+                <Download className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                <span className="hidden sm:inline">Descargar PLE (.TXT)</span>
+                <span className="sm:hidden">Descargar</span>
               </button>
             </div>
           ))}
