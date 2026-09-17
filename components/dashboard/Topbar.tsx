@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   Search,
@@ -13,6 +13,9 @@ import {
   LogOut,
   Building2,
   Menu,
+  Check,
+  CalendarDays,
+  Sparkles,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth/auth-context";
 
@@ -21,10 +24,76 @@ interface TopbarProps {
   onToggleMobileMenu?: () => void;
 }
 
+const PRESET_PERIODS = [
+  { group: "Periodos Mensuales (2026)", options: ["Marzo 2026 (Actual)", "Febrero 2026", "Enero 2026"] },
+  {
+    group: "Trimestrales",
+    options: [
+      "T1 2026 (Ene - Mar)",
+      "T4 2025 (Oct - Dic)",
+      "T3 2025 (Jul - Set)",
+      "T2 2025 (Abr - Jun)",
+      "T1 2025 (Ene - Mar)",
+    ],
+  },
+  {
+    group: "Ejercicios Anuales",
+    options: ["Ejercicio 2026 (En Curso)", "Ejercicio 2025 (Auditado)", "Todo el Historial"],
+  },
+];
+
 export const Topbar: React.FC<TopbarProps> = ({ onNewOperationClick, onToggleMobileMenu }) => {
   const { user, company, logout } = useAuth();
-  const [period, setPeriod] = useState("Enero 2024 - Marzo 2024");
+  const [period, setPeriod] = useState("Marzo 2026 (Actual)");
+  const [periodDropdownOpen, setPeriodDropdownOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [customStart, setCustomStart] = useState("2026-01-01");
+  const [customEnd, setCustomEnd] = useState("2026-03-31");
+  const [showCustomRange, setShowCustomRange] = useState(false);
+
+  const periodDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("fincont_period");
+      if (saved) setPeriod(saved);
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (periodDropdownRef.current && !periodDropdownRef.current.contains(e.target as Node)) {
+        setPeriodDropdownOpen(false);
+        setShowCustomRange(false);
+      }
+    };
+    if (periodDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [periodDropdownOpen]);
+
+  const handleSelectPeriod = (newPeriod: string) => {
+    setPeriod(newPeriod);
+    setPeriodDropdownOpen(false);
+    setShowCustomRange(false);
+    try {
+      localStorage.setItem("fincont_period", newPeriod);
+      window.dispatchEvent(new CustomEvent("fincont_period_changed", { detail: newPeriod }));
+      window.dispatchEvent(new Event("fincont_operations_updated"));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleApplyCustomRange = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customStart || !customEnd) return;
+    const formatted = `${customStart} al ${customEnd}`;
+    handleSelectPeriod(formatted);
+  };
 
   const displayName = user ? `${user.name} ${user.lastName}`.trim() : "Juan Martínez";
   const displayInitials = user?.avatarInitials || (user ? `${user.name?.[0] || ""}${user.lastName?.[0] || ""}`.toUpperCase() : "JM");
@@ -61,11 +130,122 @@ export const Topbar: React.FC<TopbarProps> = ({ onNewOperationClick, onToggleMob
 
       {/* Right Controls */}
       <div className="flex items-center gap-2 sm:gap-4 pl-2 sm:pl-4">
-        {/* Date Period Selector */}
-        <div className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl bg-[#F8FAFC] border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100/70 transition-colors cursor-pointer">
-          <Calendar className="w-3.5 h-3.5 text-slate-500" />
-          <span>{period}</span>
-          <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+        {/* Interactive Date Period Selector */}
+        <div className="relative" ref={periodDropdownRef}>
+          <button
+            type="button"
+            onClick={() => setPeriodDropdownOpen(!periodDropdownOpen)}
+            className={`hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-semibold transition-all ${
+              periodDropdownOpen
+                ? "bg-blue-50 border-blue-300 text-blue-700 shadow-xs"
+                : "bg-[#F8FAFC] border-slate-200 text-slate-700 hover:bg-slate-100/80"
+            }`}
+            title="Cambiar periodo contable"
+          >
+            <Calendar className={`w-3.5 h-3.5 ${periodDropdownOpen ? "text-blue-600" : "text-slate-500"}`} />
+            <span className="max-w-[150px] lg:max-w-[190px] truncate">{period}</span>
+            <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-150 ${periodDropdownOpen ? "rotate-180 text-blue-600" : "text-slate-400"}`} />
+          </button>
+
+          {/* Period Dropdown Menu */}
+          {periodDropdownOpen && (
+            <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-2xl border border-slate-200 shadow-xl p-3 space-y-3 animate-in fade-in slide-in-from-top-2 duration-150 z-50">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
+                  <CalendarDays className="w-4 h-4 text-blue-600" />
+                  <span>Periodo Contable</span>
+                </div>
+                <span className="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                  SUNAT / PCGE
+                </span>
+              </div>
+
+              {/* Presets List */}
+              <div className="space-y-2.5 max-h-60 overflow-y-auto pr-1">
+                {PRESET_PERIODS.map((grp) => (
+                  <div key={grp.group} className="space-y-1">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2">
+                      {grp.group}
+                    </p>
+                    <div className="space-y-0.5">
+                      {grp.options.map((opt) => {
+                        const isSelected = period === opt;
+                        return (
+                          <button
+                            key={opt}
+                            type="button"
+                            onClick={() => handleSelectPeriod(opt)}
+                            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors text-left ${
+                              isSelected
+                                ? "bg-blue-600 text-white font-semibold shadow-xs"
+                                : "text-slate-700 hover:bg-slate-100/80"
+                            }`}
+                          >
+                            <span>{opt}</span>
+                            {isSelected && <Check className="w-3.5 h-3.5 shrink-0" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Custom Date Range Toggle / Form */}
+              <div className="pt-2 border-t border-slate-100">
+                {!showCustomRange ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowCustomRange(true)}
+                    className="w-full py-1.5 px-2 text-center text-xs font-semibold text-blue-600 hover:bg-blue-50 rounded-lg transition-colors flex items-center justify-center gap-1"
+                  >
+                    <span>+ Rango personalizado...</span>
+                  </button>
+                ) : (
+                  <form onSubmit={handleApplyCustomRange} className="space-y-2 pt-1">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      Rango de fechas
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-[10px] text-slate-500 block mb-0.5">Desde</label>
+                        <input
+                          type="date"
+                          value={customStart}
+                          onChange={(e) => setCustomStart(e.target.value)}
+                          className="w-full text-xs p-1.5 border border-slate-200 rounded-lg bg-slate-50 text-slate-800 focus:outline-none focus:border-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[10px] text-slate-500 block mb-0.5">Hasta</label>
+                        <input
+                          type="date"
+                          value={customEnd}
+                          onChange={(e) => setCustomEnd(e.target.value)}
+                          className="w-full text-xs p-1.5 border border-slate-200 rounded-lg bg-slate-50 text-slate-800 focus:outline-none focus:border-blue-500"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => setShowCustomRange(false)}
+                        className="w-1/2 py-1.5 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        type="submit"
+                        className="w-1/2 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition-colors"
+                      >
+                        Aplicar
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Global Action: + Nueva operación */}
