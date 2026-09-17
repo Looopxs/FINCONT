@@ -9,14 +9,47 @@ import {
   Users2,
   CreditCard,
   BarChart3,
-  HelpCircle,
 } from "lucide-react";
+import { useOperationsStore } from "@/lib/data/operations-store";
 
 export const KpiCards: React.FC = () => {
+  const { operations, sales, purchases } = useOperationsStore();
+
+  const initialBbva = 218390.0;
+  const initialCaja = 43600.0;
+
+  const totalSales = sales.reduce((sum, s) => sum + s.amount, 0);
+  const totalPurchases = purchases.reduce((sum, p) => sum + p.amount, 0);
+
+  const bbvaInflow = operations
+    .filter((o) => o.destinationAccount === "1041" && (o.type === "VENTA" || o.type === "INGRESO"))
+    .reduce((sum, o) => sum + o.amount, 0);
+  const bbvaOutflow = operations
+    .filter((o) => o.destinationAccount === "1041" && (o.type === "COMPRA" || o.type === "EGRESO"))
+    .reduce((sum, o) => sum + o.amount, 0);
+  const currentBbva = initialBbva + bbvaInflow - bbvaOutflow;
+
+  const cajaInflow = operations
+    .filter((o) => o.destinationAccount === "101" && (o.type === "VENTA" || o.type === "INGRESO" || o.type === "TRANSFERENCIA"))
+    .reduce((sum, o) => sum + o.amount, 0);
+  const cajaOutflow = operations
+    .filter((o) => o.destinationAccount === "101" && (o.type === "COMPRA" || o.type === "EGRESO"))
+    .reduce((sum, o) => sum + o.amount, 0);
+  const currentCaja = initialCaja + cajaInflow - cajaOutflow;
+
+  const totalBankBalance = currentBbva + currentCaja;
+  const netResult = totalSales - totalPurchases;
+
+  const receivable = sales.filter((s) => s.status !== "COMPLETADA").reduce((sum, s) => sum + s.amount, 0);
+  const receivableAmount = receivable > 0 ? receivable : 86400;
+
+  const payable = purchases.filter((p) => p.status !== "COMPLETADA").reduce((sum, p) => sum + p.amount, 0);
+  const payableAmount = payable > 0 ? payable : 32200;
+
   const kpis = [
     {
       label: "Ingresos",
-      amount: "S/ 152,800",
+      amount: `S/ ${totalSales.toLocaleString("es-PE", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`,
       change: "+12% vs. mes anterior",
       isPositive: true,
       icon: Receipt,
@@ -25,7 +58,7 @@ export const KpiCards: React.FC = () => {
     },
     {
       label: "Gastos",
-      amount: "S/ 48,230",
+      amount: `S/ ${totalPurchases.toLocaleString("es-PE", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`,
       change: "-8% vs. mes anterior",
       isPositive: true,
       icon: TrendingDown,
@@ -34,25 +67,25 @@ export const KpiCards: React.FC = () => {
     },
     {
       label: "Saldo en bancos",
-      amount: "S/ 104,570",
+      amount: `S/ ${totalBankBalance.toLocaleString("es-PE", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`,
       change: "+15% vs. mes anterior",
       isPositive: true,
       icon: Landmark,
       iconColor: "text-blue-600 bg-blue-50",
-      tooltip: "Cuenta Corriente Operativa BBVA (1041)",
+      tooltip: "BBVA (1041) + Caja Efectivo (101)",
     },
     {
       label: "Resultado periodo",
-      amount: "S/ 56,320",
+      amount: `S/ ${netResult.toLocaleString("es-PE", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`,
       change: "+18% vs. mes anterior",
-      isPositive: true,
+      isPositive: netResult >= 0,
       icon: BarChart3,
       iconColor: "text-sky-600 bg-sky-50",
-      tooltip: "Utilidad operativa neta del trimestre",
+      tooltip: "Utilidad operativa neta del periodo",
     },
     {
       label: "Cuentas por cobrar",
-      amount: "S/ 86,400",
+      amount: `S/ ${receivableAmount.toLocaleString("es-PE", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`,
       change: "+15% vs. mes anterior",
       isPositive: true,
       icon: Users2,
@@ -61,7 +94,7 @@ export const KpiCards: React.FC = () => {
     },
     {
       label: "Cuentas por pagar",
-      amount: "S/ 32,200",
+      amount: `S/ ${payableAmount.toLocaleString("es-PE", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`,
       change: "-12% vs. mes anterior",
       isPositive: true,
       icon: CreditCard,

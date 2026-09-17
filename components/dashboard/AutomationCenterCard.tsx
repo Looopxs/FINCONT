@@ -13,8 +13,10 @@ import {
   Play,
   RotateCcw,
 } from "lucide-react";
+import { useOperationsStore } from "@/lib/data/operations-store";
 
 export const AutomationCenterCard: React.FC<{ onTriggerSim?: () => void }> = ({ onTriggerSim }) => {
+  const { addOperation } = useOperationsStore();
   const [simulating, setSimulating] = useState(false);
   const [simStep, setSimStep] = useState(5);
 
@@ -65,6 +67,16 @@ export const AutomationCenterCard: React.FC<{ onTriggerSim?: () => void }> = ({ 
     const timer4 = setTimeout(() => {
       setSimStep(5);
       setSimulating(false);
+      // Trigger actual real operation into the global state
+      addOperation({
+        type: "VENTA",
+        entityName: "Inversiones del Sur S.A.C.",
+        entityDocument: "20556677889",
+        concept: "Cobro automatizado BBVA Factura F001-0199",
+        amount: 3540.0,
+        destinationAccount: "1041",
+        customPCGECode: "70121",
+      });
       if (onTriggerSim) onTriggerSim();
     }, 2800);
   };
@@ -83,21 +95,21 @@ export const AutomationCenterCard: React.FC<{ onTriggerSim?: () => void }> = ({ 
           <p className="text-xs text-slate-400 mt-0.5">Tu contabilidad, en piloto automático.</p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+          <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] sm:text-xs font-semibold">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Todo funcionando correctamente</span>
+            <span>Motor 100% activo</span>
           </div>
 
           <button
             onClick={handleRunSim}
             disabled={simulating}
-            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-xs disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-xs disabled:opacity-50 shrink-0"
           >
             {simulating ? (
               <>
                 <RotateCcw className="w-3.5 h-3.5 animate-spin" />
-                <span>Simulando flujo...</span>
+                <span>Simulando...</span>
               </>
             ) : (
               <>

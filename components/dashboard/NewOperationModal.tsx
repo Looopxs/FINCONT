@@ -16,6 +16,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import { lookupPCGE } from "@/lib/pcge-service";
+import { useOperationsStore } from "@/lib/data/operations-store";
 
 interface NewOperationModalProps {
   isOpen: boolean;
@@ -28,6 +29,7 @@ export const NewOperationModal: React.FC<NewOperationModalProps> = ({
   onClose,
   onOperationCreated,
 }) => {
+  const { addOperation } = useOperationsStore();
   const [opType, setOpType] = useState<"VENTA" | "COMPRA" | "TRANSFERENCIA">("VENTA");
   const [party, setParty] = useState("Distribuidora Lima S.A.C.");
   const [docType, setDocType] = useState("Factura");
@@ -62,19 +64,23 @@ export const NewOperationModal: React.FC<NewOperationModalProps> = ({
     setTimeout(() => {
       setIsProcessing(false);
       setCurrentStep(0);
+
+      // Save into global operations store so dashboard and all modules react immediately
+      const result = addOperation({
+        type: opType,
+        entityName: party,
+        entityDocument: opType === "VENTA" ? "20601234567" : "20100132592",
+        concept: concept || `${opType === "VENTA" ? "Venta" : "Compra"} según ${docType} ${docNumber}`,
+        amount: numTotal > 0 ? numTotal : 1180.0,
+        destinationAccount: paymentMethod === "CAJA" ? "101" : "1041",
+        customPCGECode: pcgeCode,
+      });
+
       if (onOperationCreated) {
-        onOperationCreated({
-          id: `op-${Date.now()}`,
-          date: "Hoy",
-          type: docType,
-          thirdParty: party,
-          description: concept,
-          amount: `S/ ${parseFloat(totalAmount).toLocaleString("es-PE", { minimumFractionDigits: 2 })}`,
-          status: "Procesado",
-        });
+        onOperationCreated(result.operation);
       }
       onClose();
-    }, 3200);
+    }, 3000);
   };
 
   return (

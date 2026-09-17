@@ -7,7 +7,7 @@ import { AutomationCenterCard } from "@/components/dashboard/AutomationCenterCar
 import { RecentOperationsTable } from "@/components/dashboard/RecentOperationsTable";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { UpcomingDue } from "@/components/dashboard/UpcomingDue";
-import { Sparkles, Building2, CheckCircle2 } from "lucide-react";
+import { Sparkles, Building2, CheckCircle2, RefreshCw } from "lucide-react";
 
 export default function DashboardPage() {
   const [lastSyncTime, setLastSyncTime] = useState("Justo ahora");
@@ -43,6 +43,16 @@ export default function DashboardPage() {
         <div className="flex items-center gap-2 text-xs text-slate-500 bg-white px-3.5 py-2 rounded-xl border border-slate-200/80 shadow-xs self-start sm:self-auto shrink-0">
           <span className="text-slate-400">Última sincronización:</span>
           <span className="font-bold text-slate-700">{lastSyncTime}</span>
+          <button
+            onClick={() => {
+              window.dispatchEvent(new Event("fincont_operations_updated"));
+              setLastSyncTime(new Date().toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit", second: "2-digit" }));
+            }}
+            className="p-1 -mr-1 text-slate-400 hover:text-blue-600 hover:bg-slate-50 rounded-md transition-colors ml-1"
+            title="Sincronizar dashboard"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
 

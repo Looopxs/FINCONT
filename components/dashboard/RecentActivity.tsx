@@ -11,55 +11,47 @@ import {
   ArrowRight,
   Clock,
 } from "lucide-react";
+import { useOperationsStore } from "@/lib/data/operations-store";
 
 export const RecentActivity: React.FC = () => {
-  const activities = [
-    {
-      id: "act-1",
-      title: "Factura emitida",
-      description: "FAC-0023 · Cliente Andina S.A.",
-      time: "Hace 12 min",
-      amount: "S/ 12,500",
-      icon: FileText,
-      iconColor: "text-emerald-600 bg-emerald-50",
-    },
-    {
-      id: "act-2",
-      title: "Pago recibido",
-      description: "Abono en BBVA · Comercial Delta",
-      time: "Hace 25 min",
-      amount: "S/ 8,320",
-      icon: CreditCard,
-      iconColor: "text-blue-600 bg-blue-50",
-    },
-    {
-      id: "act-3",
-      title: "Asiento contable generado",
-      description: "Asiento autom. AS-0042 (PCGE 1212/7012)",
-      time: "Hace 1 hora",
-      amount: null,
-      icon: BookOpen,
-      iconColor: "text-indigo-600 bg-indigo-50",
-    },
-    {
-      id: "act-4",
-      title: "Nuevo cliente registrado",
-      description: "Distribuidora Lima S.A.C.",
-      time: "Hace 2 horas",
-      amount: null,
-      icon: UserPlus,
-      iconColor: "text-amber-600 bg-amber-50",
-    },
-    {
-      id: "act-5",
-      title: "Comprobante generado",
-      description: "BOL-0089 · Venta mostrador",
-      time: "Hace 3 horas",
-      amount: "S/ 1,180",
-      icon: Receipt,
-      iconColor: "text-teal-600 bg-teal-50",
-    },
-  ];
+  const { operations } = useOperationsStore();
+
+  const activities = operations.slice(0, 5).map((op, idx) => {
+    const isSale = op.type === "VENTA";
+    const isPurchase = op.type === "COMPRA";
+
+    if (isSale) {
+      return {
+        id: `act-${op.id}`,
+        title: "Factura emitida",
+        description: `${op.relatedInvoiceId || "F001"} · ${op.entityName}`,
+        time: idx === 0 ? "Justo ahora" : `Fecha: ${op.date}`,
+        amount: `S/ ${op.amount.toLocaleString("es-PE", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`,
+        icon: FileText,
+        iconColor: "text-emerald-600 bg-emerald-50",
+      };
+    } else if (isPurchase) {
+      return {
+        id: `act-${op.id}`,
+        title: "Compra registrada",
+        description: `${op.relatedInvoiceId || "C001"} · ${op.entityName}`,
+        time: idx === 0 ? "Justo ahora" : `Fecha: ${op.date}`,
+        amount: `S/ ${op.amount.toLocaleString("es-PE", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`,
+        icon: CreditCard,
+        iconColor: "text-amber-600 bg-amber-50",
+      };
+    } else {
+      return {
+        id: `act-${op.id}`,
+        title: "Movimiento financiero",
+        description: `${op.concept} · ${op.destinationAccount === "1041" ? "BBVA" : "Caja"}`,
+        time: idx === 0 ? "Justo ahora" : `Fecha: ${op.date}`,
+        amount: `S/ ${op.amount.toLocaleString("es-PE", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`,
+        icon: BookOpen,
+        iconColor: "text-blue-600 bg-blue-50",
+      };
+    }
+  });
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_2px_10px_-2px_rgba(15,23,42,0.04)] p-5 select-none">

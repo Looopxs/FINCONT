@@ -13,9 +13,15 @@ import {
   Cell,
 } from "recharts";
 import { ChevronDown, MoreHorizontal } from "lucide-react";
+import { useOperationsStore } from "@/lib/data/operations-store";
 
 export const FinancialCharts: React.FC = () => {
   const [periodFilter, setPeriodFilter] = useState("Mensual");
+  const { sales, purchases } = useOperationsStore();
+
+  const currentMonthSales = sales.reduce((sum, s) => sum + s.amount, 0);
+  const currentMonthPurchases = purchases.reduce((sum, p) => sum + p.amount, 0);
+  const totalExpenses = currentMonthPurchases > 0 ? currentMonthPurchases : 48230;
 
   const barData = [
     { month: "Ene", ingresos: 45000, gastos: 24000 },
@@ -29,15 +35,19 @@ export const FinancialCharts: React.FC = () => {
     { month: "Sep", ingresos: 92000, gastos: 46000 },
     { month: "Oct", ingresos: 104000, gastos: 49000 },
     { month: "Nov", ingresos: 115000, gastos: 52000 },
-    { month: "Dic", ingresos: 152800, gastos: 48230 },
+    {
+      month: "Dic",
+      ingresos: currentMonthSales > 0 ? Math.round(currentMonthSales) : 152800,
+      gastos: currentMonthPurchases > 0 ? Math.round(currentMonthPurchases) : 48230,
+    },
   ];
 
   const donutData = [
-    { name: "Operación", value: 42, amount: "S/ 20,256", color: "#2563EB" },
-    { name: "Personal", value: 28, amount: "S/ 13,504", color: "#14B8A6" },
-    { name: "Administración", value: 18, amount: "S/ 8,681", color: "#3B82F6" },
-    { name: "Impuestos", value: 8, amount: "S/ 3,858", color: "#10B981" },
-    { name: "Otros", value: 4, amount: "S/ 1,929", color: "#94A3B8" },
+    { name: "Operación", value: 42, amount: `S/ ${Math.round(totalExpenses * 0.42).toLocaleString("es-PE")}`, color: "#2563EB" },
+    { name: "Personal", value: 28, amount: `S/ ${Math.round(totalExpenses * 0.28).toLocaleString("es-PE")}`, color: "#14B8A6" },
+    { name: "Administración", value: 18, amount: `S/ ${Math.round(totalExpenses * 0.18).toLocaleString("es-PE")}`, color: "#3B82F6" },
+    { name: "Impuestos", value: 8, amount: `S/ ${Math.round(totalExpenses * 0.08).toLocaleString("es-PE")}`, color: "#10B981" },
+    { name: "Otros", value: 4, amount: `S/ ${Math.round(totalExpenses * 0.04).toLocaleString("es-PE")}`, color: "#94A3B8" },
   ];
 
   return (
