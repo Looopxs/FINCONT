@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
+import FloatingChatBot from "@/components/common/FloatingChatBot";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -51,6 +52,7 @@ export default function RootLayout({
     <html lang="es" className={`${inter.variable} ${manrope.variable}`}>
       <body className="bg-background text-slate-900 antialiased selection:bg-blue-100 selection:text-blue-900">
         {children}
+        <FloatingChatBot />
       </body>
     </html>
   );
