@@ -50,17 +50,6 @@ export default function LoginPage() {
     }, 400);
   };
 
-  const handleQuickDemo = () => {
-    setEmail("demo@fincont.pe");
-    setPassword("admin123");
-    setLoading(true);
-    login("demo@fincont.pe", "admin123");
-    setTimeout(() => {
-      setLoading(false);
-      router.push("/dashboard");
-    }, 400);
-  };
-
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-12 bg-white">
       {/* 50% LEFT: Rich Branding, Value Props & Live Automation Showcase */}
@@ -174,28 +163,6 @@ export default function LoginPage() {
             <p className="text-sm text-slate-500 mt-1 leading-relaxed">
               Ingresa tus credenciales para acceder al sistema contable.
             </p>
-          </div>
-
-          {/* One-Click Demo Evaluator Banner */}
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/80 rounded-2xl p-4 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="text-left">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-blue-700 bg-blue-100/80 px-2 py-0.5 rounded-full inline-block mb-1">
-                Acceso Rápido de Evaluación
-              </span>
-              <p className="text-xs font-semibold text-slate-800">
-                Empresa: Libertad S.A. (RUC 20304050601)
-              </p>
-              <p className="text-[11px] text-slate-500 font-mono">
-                demo@fincont.pe / admin123
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={handleQuickDemo}
-              className="w-full sm:w-auto px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition-colors whitespace-nowrap"
-            >
-              Ingresar con 1 clic →
-            </button>
           </div>
 
           {/* Error alert if any */}
