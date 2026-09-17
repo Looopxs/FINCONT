@@ -21,44 +21,50 @@ export const DashboardPreviewSection: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<"general" | "caja" | "asientos">("general");
 
   return (
-    <section id="soluciones" className="py-20 sm:py-28 bg-[#FAFBFD] relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="demostracion" className="py-20 sm:py-28 bg-[#FAFBFD] relative overflow-hidden scroll-mt-16">
+      <div id="soluciones" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Header */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-12">
           <div className="lg:col-span-7 space-y-4">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold border border-blue-100">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Experiencia pensada para ti</span>
+              <span>Demostración Visual Interactiva · Sin Iniciar Sesión</span>
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
-              Una plataforma diseñada para ti
+              Prueba la plataforma de forma visual
             </h2>
             <p className="text-base sm:text-lg text-slate-600 max-w-xl leading-relaxed">
-              Una experiencia moderna, intuitiva y completa para llevar tu contabilidad al siguiente nivel.
+              Explora en vivo la interfaz, el flujo de caja, bancos y la generación automática de asientos contables antes de registrar tus propias credenciales.
             </p>
 
             <div className="space-y-2.5 pt-2">
               <div className="flex items-center gap-2.5 text-sm text-slate-700 font-medium">
                 <CheckCircle2 className="w-5 h-5 text-teal-500 flex-shrink-0" />
-                <span>Interfaz simple, limpia y sin saturación</span>
+                <span>Simulación en tiempo real de indicadores y balance de comprobación</span>
               </div>
               <div className="flex items-center gap-2.5 text-sm text-slate-700 font-medium">
                 <CheckCircle2 className="w-5 h-5 text-teal-500 flex-shrink-0" />
-                <span>Acceso seguro desde cualquier dispositivo (Desktop, Tablet, Mobile)</span>
+                <span>Interactúa con las pestañas inferiores para ver cada módulo</span>
               </div>
               <div className="flex items-center gap-2.5 text-sm text-slate-700 font-medium">
                 <CheckCircle2 className="w-5 h-5 text-teal-500 flex-shrink-0" />
-                <span>Segura, confiable y respaldada con auditoría transaccional</span>
+                <span>Crea tu cuenta cuando estés listo para operar con tus propios datos</span>
               </div>
             </div>
 
-            <div className="pt-3">
+            <div className="flex flex-wrap items-center gap-3 pt-3">
               <Link
-                href="/dashboard"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/30"
+                href="/register"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/30 active:scale-95"
               >
-                Conocer más sobre la plataforma
+                <span>Crear cuenta gratis</span>
                 <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 transition-colors shadow-2xs"
+              >
+                <span>Ya tengo cuenta: Iniciar sesión</span>
               </Link>
             </div>
           </div>
@@ -123,11 +129,17 @@ export const DashboardPreviewSection: React.FC = () => {
                 FC
               </div>
               <div>
-                <h3 className="text-base font-bold text-slate-900">
-                  Resumen de Demostración Financiera
-                </h3>
-                <p className="text-xs text-slate-400">
-                  Empresa: Libertad S.A. / FINCONT SAC • Moneda: Soles (S/)
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="text-base font-bold text-slate-900">
+                    Demostración Interactiva del Sistema
+                  </h3>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-blue-600" />
+                    Vista previa sin iniciar sesión
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500">
+                  Haz clic en las pestañas para simular cómo opera FINCONT en tiempo real
                 </p>
               </div>
             </div>

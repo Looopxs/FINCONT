@@ -43,10 +43,10 @@ export const CtaSection: React.FC = () => {
 
             <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
               <Link
-                href="/dashboard"
+                href="/register"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-0.5 active:translate-y-0 text-base"
               >
-                Empezar ahora
+                Crear cuenta gratis
                 <ArrowRight className="w-5 h-5" />
               </Link>
               <Link

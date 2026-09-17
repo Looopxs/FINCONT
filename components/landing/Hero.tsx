@@ -69,20 +69,20 @@ export const Hero: React.FC = () => {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-1">
               <Link
-                href="/dashboard"
+                href="/register"
                 className="group w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-[0_4px_16px_rgba(37,99,235,0.28)] transition-all duration-200 hover:shadow-[0_8px_24px_rgba(37,99,235,0.36)] hover:-translate-y-0.5 active:translate-y-0 text-sm sm:text-base"
               >
-                <span>Solicitar una demo</span>
+                <span>Crear cuenta gratis</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
               </Link>
 
-              <Link
-                href="#como-funciona"
+              <a
+                href="#demostracion"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-slate-700 bg-white/95 hover:bg-slate-50 border border-slate-200/90 shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:border-slate-300 transition-all duration-200 text-sm sm:text-base backdrop-blur-sm"
               >
-                <span>Conocer más</span>
-                <ArrowRight className="w-4 h-4 text-slate-400" />
-              </Link>
+                <Sparkles className="w-4 h-4 text-blue-600" />
+                <span>Ver demo visual</span>
+              </a>
             </div>
 
             {/* Trust Checklist */}
