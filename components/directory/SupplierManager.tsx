@@ -10,12 +10,17 @@ import {
   Mail,
   Phone,
   Landmark,
+  ArrowUpRight,
   ShieldCheck,
   Edit2,
   Trash2,
   X,
   CreditCard,
+  Filter,
+  CheckCircle2,
+  Loader2,
 } from "lucide-react";
+import { lookupDocument } from "@/lib/services/reniec-sunat-service";
 
 export const SupplierManager: React.FC = () => {
   const [suppliers, setSuppliers] = useState<Supplier[]>(INITIAL_SUPPLIERS);
@@ -35,12 +40,31 @@ export const SupplierManager: React.FC = () => {
   const [bankAccount, setBankAccount] = useState("");
   const [cci, setCci] = useState("");
   const [formError, setFormError] = useState("");
+  const [lookingUp, setLookingUp] = useState(false);
+  const [lookupStatus, setLookupStatus] = useState<string | null>(null);
 
   // Metrics
   const totalSuppliers = suppliers.length;
   const totalPurchased = suppliers.reduce((sum, s) => sum + s.totalPurchased, 0);
   const totalPending = suppliers.reduce((sum, s) => sum + s.pendingBalance, 0);
   const upToDateCount = suppliers.filter((s) => s.status === "Al día").length;
+
+  const handleRucChange = async (val: string) => {
+    const clean = val.replace(/\D/g, "");
+    setRuc(clean);
+    setLookupStatus(null);
+
+    if (clean.length === 11) {
+      setLookingUp(true);
+      const res = await lookupDocument("RUC", clean);
+      setLookingUp(false);
+      if (res.success && res.name) {
+        setName(res.name);
+        if (res.address) setAddress(res.address);
+        setLookupStatus("✓ SUNAT Activo y Habido");
+      }
+    }
+  };
 
   const handleOpenCreate = () => {
     setEditingSupplier(null);
@@ -54,6 +78,7 @@ export const SupplierManager: React.FC = () => {
     setBankAccount("");
     setCci("");
     setFormError("");
+    setLookupStatus(null);
     setModalOpen(true);
   };
 
@@ -69,6 +94,7 @@ export const SupplierManager: React.FC = () => {
     setBankAccount(s.bankAccount);
     setCci(s.cci);
     setFormError("");
+    setLookupStatus(null);
     setModalOpen(true);
   };
 
@@ -370,11 +396,19 @@ export const SupplierManager: React.FC = () => {
               {/* RUC & Name */}
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">RUC (11)</label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="font-bold text-slate-700 block">RUC (11)</label>
+                    {lookingUp && (
+                      <span className="text-[10px] text-blue-600 flex items-center gap-1 font-semibold animate-pulse">
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                        SUNAT...
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="text"
                     value={ruc}
-                    onChange={(e) => setRuc(e.target.value)}
+                    onChange={(e) => handleRucChange(e.target.value)}
                     placeholder="20100132592"
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     maxLength={11}
@@ -382,13 +416,21 @@ export const SupplierManager: React.FC = () => {
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="font-bold text-slate-700 block mb-1">Razón Social</label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="font-bold text-slate-700 block">Razón Social (Autocompletado SUNAT)</label>
+                    {lookupStatus && !lookingUp && (
+                      <span className="text-[10px] text-emerald-600 flex items-center gap-1 font-bold">
+                        <CheckCircle2 className="w-3 h-3" />
+                        {lookupStatus}
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Ej: Aceros Arequipa S.A."
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />
                 </div>

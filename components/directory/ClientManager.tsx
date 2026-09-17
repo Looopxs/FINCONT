@@ -16,7 +16,10 @@ import {
   X,
   FileText,
   Filter,
+  Loader2,
+  CheckCircle2,
 } from "lucide-react";
+import { lookupDocument } from "@/lib/services/reniec-sunat-service";
 
 export const ClientManager: React.FC = () => {
   const [clients, setClients] = useState<Client[]>(INITIAL_CLIENTS);
@@ -34,12 +37,32 @@ export const ClientManager: React.FC = () => {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [formError, setFormError] = useState("");
+  const [lookingUp, setLookingUp] = useState(false);
+  const [lookupStatus, setLookupStatus] = useState<string | null>(null);
 
   // Metrics
   const totalClients = clients.length;
   const totalInvoiced = clients.reduce((sum, c) => sum + c.totalInvoiced, 0);
   const totalPending = clients.reduce((sum, c) => sum + c.pendingBalance, 0);
   const upToDateCount = clients.filter((c) => c.status === "Al día").length;
+
+  const handleDocNumberChange = async (val: string) => {
+    const clean = val.replace(/\D/g, "");
+    setDocNumber(clean);
+    setLookupStatus(null);
+
+    const targetLength = docType === "RUC" ? 11 : 8;
+    if (clean.length === targetLength) {
+      setLookingUp(true);
+      const res = await lookupDocument(docType, clean);
+      setLookingUp(false);
+      if (res.success && res.name) {
+        setName(res.name);
+        if (res.address) setAddress(res.address);
+        setLookupStatus(docType === "DNI" ? "✓ RENIEC verificado" : "✓ SUNAT Activo y Habido");
+      }
+    }
+  };
 
   const handleOpenCreate = () => {
     setEditingClient(null);
@@ -51,6 +74,7 @@ export const ClientManager: React.FC = () => {
     setPhone("");
     setAddress("");
     setFormError("");
+    setLookupStatus(null);
     setModalOpen(true);
   };
 
@@ -64,6 +88,7 @@ export const ClientManager: React.FC = () => {
     setPhone(c.phone);
     setAddress(c.address);
     setFormError("");
+    setLookupStatus(null);
     setModalOpen(true);
   };
 
@@ -362,7 +387,11 @@ export const ClientManager: React.FC = () => {
                   <label className="font-bold text-slate-700 block mb-1">Tipo Doc.</label>
                   <select
                     value={docType}
-                    onChange={(e) => setDocType(e.target.value as any)}
+                    onChange={(e) => {
+                      setDocType(e.target.value as any);
+                      setDocNumber("");
+                      setLookupStatus(null);
+                    }}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white font-semibold"
                   >
                     <option value="RUC">RUC (11)</option>
@@ -370,12 +399,26 @@ export const ClientManager: React.FC = () => {
                   </select>
                 </div>
                 <div className="col-span-2">
-                  <label className="font-bold text-slate-700 block mb-1">Número de Documento</label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="font-bold text-slate-700 block">Número de Documento</label>
+                    {lookingUp && (
+                      <span className="text-[10px] text-blue-600 flex items-center gap-1 font-semibold animate-pulse">
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                        Buscando en {docType === "DNI" ? "RENIEC" : "SUNAT"}...
+                      </span>
+                    )}
+                    {lookupStatus && !lookingUp && (
+                      <span className="text-[10px] text-emerald-600 flex items-center gap-1 font-bold">
+                        <CheckCircle2 className="w-3 h-3" />
+                        {lookupStatus}
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="text"
                     value={docNumber}
-                    onChange={(e) => setDocNumber(e.target.value)}
-                    placeholder={docType === "RUC" ? "20100070970" : "40556781"}
+                    onChange={(e) => handleDocNumberChange(e.target.value)}
+                    placeholder={docType === "RUC" ? "20100070970 (11 dígitos)" : "40556781 (8 dígitos)"}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     maxLength={docType === "RUC" ? 11 : 8}
                     required
@@ -385,13 +428,15 @@ export const ClientManager: React.FC = () => {
 
               {/* Business Name */}
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Razón Social o Nombre Completo</label>
+                <label className="font-bold text-slate-700 block mb-1">
+                  {docType === "DNI" ? "Nombre Completo (Autocompletado RENIEC)" : "Razón Social (Autocompletado SUNAT)"}
+                </label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Ej: Distribuidora Lima S.A.C."
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder={docType === "DNI" ? "Ej: JUAN PEREZ LOPEZ" : "Ej: Distribuidora Lima S.A.C."}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 />
               </div>

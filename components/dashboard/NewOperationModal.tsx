@@ -14,9 +14,11 @@ import {
   Landmark,
   ArrowRight,
   BookOpen,
+  Loader2,
 } from "lucide-react";
 import { lookupPCGE } from "@/lib/pcge-service";
 import { useOperationsStore } from "@/lib/data/operations-store";
+import { lookupDocument } from "@/lib/services/reniec-sunat-service";
 
 interface NewOperationModalProps {
   isOpen: boolean;
@@ -31,6 +33,8 @@ export const NewOperationModal: React.FC<NewOperationModalProps> = ({
 }) => {
   const { addOperation } = useOperationsStore();
   const [opType, setOpType] = useState<"VENTA" | "COMPRA" | "TRANSFERENCIA">("VENTA");
+  const [docIdType, setDocIdType] = useState<"RUC" | "DNI">("RUC");
+  const [docIdNumber, setDocIdNumber] = useState("20489123841");
   const [party, setParty] = useState("Distribuidora Lima S.A.C.");
   const [docType, setDocType] = useState("Factura");
   const [docNumber, setDocNumber] = useState("F001-0089");
@@ -38,12 +42,31 @@ export const NewOperationModal: React.FC<NewOperationModalProps> = ({
   const [paymentMethod, setPaymentMethod] = useState<"BBVA" | "CAJA" | "CREDITO">("BBVA");
   const [concept, setConcept] = useState("Venta de mercaderías al contado");
   const [pcgeCode, setPcgeCode] = useState("70121");
+  const [lookingUp, setLookingUp] = useState(false);
+  const [lookupStatus, setLookupStatus] = useState<string | null>(null);
 
   // Simulation steps
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
 
   const matchedAccount = lookupPCGE(pcgeCode);
+
+  const handleDocIdChange = async (val: string) => {
+    const clean = val.replace(/\D/g, "");
+    setDocIdNumber(clean);
+    setLookupStatus(null);
+
+    const targetLength = docIdType === "RUC" ? 11 : 8;
+    if (clean.length === targetLength) {
+      setLookingUp(true);
+      const res = await lookupDocument(docIdType, clean);
+      setLookingUp(false);
+      if (res.success && res.name) {
+        setParty(res.name);
+        setLookupStatus(docIdType === "DNI" ? "✓ RENIEC verificado" : "✓ SUNAT Activo y Habido");
+      }
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -69,7 +92,7 @@ export const NewOperationModal: React.FC<NewOperationModalProps> = ({
       const result = addOperation({
         type: opType,
         entityName: party,
-        entityDocument: opType === "VENTA" ? "20601234567" : "20100132592",
+        entityDocument: docIdNumber || (opType === "VENTA" ? "20601234567" : "20100132592"),
         concept: concept || `${opType === "VENTA" ? "Venta" : "Compra"} según ${docType} ${docNumber}`,
         amount: numTotal > 0 ? numTotal : 1180.0,
         destinationAccount: paymentMethod === "CAJA" ? "101" : "1041",
@@ -190,43 +213,92 @@ export const NewOperationModal: React.FC<NewOperationModalProps> = ({
               </div>
             </div>
 
-            {/* Client / Supplier and Doc Type */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Identity Lookup (DNI / RUC) & Party */}
+            <div className="space-y-3 p-3.5 bg-slate-50/80 rounded-2xl border border-slate-100">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Tipo Identidad
+                  </label>
+                  <select
+                    value={docIdType}
+                    onChange={(e) => {
+                      setDocIdType(e.target.value as any);
+                      setDocIdNumber("");
+                      setLookupStatus(null);
+                    }}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 bg-white font-semibold"
+                  >
+                    <option value="RUC">RUC (SUNAT - 11)</option>
+                    <option value="DNI">DNI (RENIEC - 8)</option>
+                  </select>
+                </div>
+
+                <div className="sm:col-span-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-bold text-slate-700">
+                      N° Documento
+                    </label>
+                    {lookingUp && (
+                      <span className="text-[10px] text-blue-600 flex items-center gap-1 font-semibold animate-pulse">
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                        Buscando en {docIdType === "DNI" ? "RENIEC" : "SUNAT"}...
+                      </span>
+                    )}
+                    {lookupStatus && !lookingUp && (
+                      <span className="text-[10px] text-emerald-600 flex items-center gap-1 font-bold">
+                        <CheckCircle2 className="w-3 h-3" />
+                        {lookupStatus}
+                      </span>
+                    )}
+                  </div>
+                  <input
+                    type="text"
+                    value={docIdNumber}
+                    onChange={(e) => handleDocIdChange(e.target.value)}
+                    placeholder={docIdType === "RUC" ? "Ej: 20100132592" : "Ej: 30733010"}
+                    maxLength={docIdType === "RUC" ? 11 : 8}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  {opType === "VENTA" ? "Cliente" : opType === "COMPRA" ? "Proveedor" : "Origen / Destino"}
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  {opType === "VENTA" ? "Cliente" : opType === "COMPRA" ? "Proveedor" : "Tercero / Razón Social"}
                 </label>
                 <input
                   type="text"
                   value={party}
                   onChange={(e) => setParty(e.target.value)}
-                  placeholder="Razón Social o Nombre"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  placeholder="Razón Social o Nombre Completo"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 />
               </div>
+            </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  Tipo y N° Comprobante
-                </label>
-                <div className="flex gap-2">
-                  <select
-                    value={docType}
-                    onChange={(e) => setDocType(e.target.value)}
-                    className="px-3 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                  >
-                    <option>Factura</option>
-                    <option>Boleta</option>
-                    <option>Recibo</option>
-                    <option>Nota Débito</option>
-                  </select>
-                  <input
-                    type="text"
-                    value={docNumber}
-                    onChange={(e) => setDocNumber(e.target.value)}
-                    className="flex-1 px-3 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                  />
-                </div>
+            {/* Voucher and Number */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                Tipo y N° Comprobante
+              </label>
+              <div className="flex gap-2">
+                <select
+                  value={docType}
+                  onChange={(e) => setDocType(e.target.value)}
+                  className="px-3 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                >
+                  <option>Factura</option>
+                  <option>Boleta</option>
+                  <option>Recibo</option>
+                  <option>Nota Débito</option>
+                </select>
+                <input
+                  type="text"
+                  value={docNumber}
+                  onChange={(e) => setDocNumber(e.target.value)}
+                  className="flex-1 px-3 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
               </div>
             </div>
 
