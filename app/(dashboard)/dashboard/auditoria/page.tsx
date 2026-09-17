@@ -168,66 +168,68 @@ export default function AuditoriaPage() {
       )}
 
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-slate-900">Pista de Auditoría e Inmutabilidad</h1>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Pista de Auditoría e Inmutabilidad</h1>
+            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
               <ShieldCheck className="w-3.5 h-3.5" />
-              Cadena SHA-256 Inalterable
+              SHA-256 Inalterable
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Trazabilidad forense inmutable de cada operación, comprobante, movimiento de fondos y asiento contable
+          <p className="text-xs text-slate-500 mt-0.5">
+            Trazabilidad forense inmutable de cada operación y asiento contable
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
           <button
             onClick={handleVerifyChain}
             disabled={verifyingChain}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-xs"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-xs shrink-0"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-blue-600 ${verifyingChain ? "animate-spin" : ""}`} />
-            <span>{verifyingChain ? "Verificando hashes..." : "Verificar Integridad"}</span>
+            <span className="hidden sm:inline">{verifyingChain ? "Verificando hashes..." : "Verificar Integridad"}</span>
+            <span className="sm:hidden">Verificar</span>
           </button>
           <button
             onClick={handleDownloadCertificate}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-sm transition-all hover:shadow-md"
+            className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-sm transition-all hover:shadow-md active:scale-95 shrink-0"
           >
             <Download className="w-3.5 h-3.5" />
-            <span>Descargar Certificado de Auditoría</span>
+            <span className="hidden sm:inline">Descargar Certificado de Auditoría</span>
+            <span className="sm:hidden">Certificado</span>
           </button>
         </div>
       </div>
 
       {/* 3 Integrity Indicators */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-1">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
+        <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs space-y-0.5 sm:space-y-1">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400">Total Eventos Sellados</span>
-            <Database className="w-4 h-4 text-blue-600" />
+            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 truncate block">Eventos Sellados</span>
+            <Database className="w-3.5 h-3.5 text-blue-600 shrink-0 hidden sm:block" />
           </div>
-          <p className="text-2xl font-extrabold text-slate-900 font-mono">{auditLogs.length}</p>
-          <span className="text-[11px] font-semibold text-emerald-600">Bloques enlazados criptográficamente</span>
+          <p className="text-base sm:text-2xl font-extrabold text-slate-900 font-mono">{auditLogs.length}</p>
+          <span className="text-[9px] sm:text-[11px] font-semibold text-emerald-600 truncate block">Criptográficos</span>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-1">
+        <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs space-y-0.5 sm:space-y-1">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400">Estado de Integridad</span>
-            <Fingerprint className="w-4 h-4 text-emerald-600" />
+            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 truncate block">Integridad</span>
+            <Fingerprint className="w-3.5 h-3.5 text-emerald-600 shrink-0 hidden sm:block" />
           </div>
-          <p className="text-2xl font-extrabold text-emerald-600 font-mono">100% Válido</p>
-          <span className="text-[11px] font-semibold text-slate-500">Cero colisiones o manipulaciones</span>
+          <p className="text-base sm:text-2xl font-extrabold text-emerald-600 font-mono">100% Válido</p>
+          <span className="text-[9px] sm:text-[11px] font-semibold text-emerald-600 truncate block">0 manipulaciones</span>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-1">
+        <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs space-y-0.5 sm:space-y-1">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400">Algoritmo de Firma</span>
-            <Lock className="w-4 h-4 text-indigo-600" />
+            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 truncate block">Norma Legal</span>
+            <Lock className="w-3.5 h-3.5 text-indigo-600 shrink-0 hidden sm:block" />
           </div>
-          <p className="text-2xl font-extrabold text-slate-900 font-mono">SHA-256</p>
-          <span className="text-[11px] font-semibold text-indigo-600">Cumplimiento Estándar ISO 27001 / SUNAT</span>
+          <p className="text-base sm:text-2xl font-extrabold text-slate-900 font-mono">SUNAT PLE</p>
+          <span className="text-[9px] sm:text-[11px] font-semibold text-slate-500 truncate block">Auditoría fiscal</span>
         </div>
       </div>
 

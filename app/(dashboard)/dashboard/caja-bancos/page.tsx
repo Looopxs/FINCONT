@@ -182,23 +182,23 @@ export default function CajaBancosPage() {
       )}
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-slate-900">Libro Caja y Bancos</h1>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700">
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Libro Caja y Bancos</h1>
+            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-emerald-50 text-emerald-700">
               Cuentas 101 / 1041 PCGE
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Control de liquidez en tiempo real, saldos acumulados y conciliación mensual con extractos bancarios
+          <p className="text-xs text-slate-500 mt-0.5">
+            Control de liquidez en tiempo real y conciliación bancaria
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
           <button
             onClick={() => setTransferModalOpen(true)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm shadow-indigo-500/20 transition-all hover:shadow-md"
+            className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm shadow-indigo-500/20 transition-all hover:shadow-md active:scale-95 shrink-0"
           >
             <ArrowLeftRight className="w-4 h-4" />
             <span>Transferir entre Cuentas</span>
@@ -207,9 +207,9 @@ export default function CajaBancosPage() {
       </div>
 
       {/* Account Cards Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6">
         {/* BBVA Card */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs space-y-4 relative overflow-hidden">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-xs space-y-3 sm:space-y-4 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-bl-full pointer-events-none" />
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">

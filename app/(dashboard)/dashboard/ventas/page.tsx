@@ -90,70 +90,71 @@ export default function VentasPage() {
       )}
 
       {/* Top Bar Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-slate-900">Registro de Ventas e Ingresos</h1>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700">
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Registro de Ventas e Ingresos</h1>
+            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-blue-50 text-blue-700">
               SUNAT R.S. 112-2021
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Facturas, Boletas y Notas de Crédito con cálculo automático de IGV (18%) y asientos PCGE (1212 - 40111 - 70121)
+          <p className="text-xs text-slate-500 mt-0.5">
+            Facturas, Boletas y Notas de Crédito con cálculo automático de IGV (18%)
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
           <button
             onClick={handleExportSunat}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-xs"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-xs shrink-0"
           >
             <Download className="w-3.5 h-3.5 text-slate-400" />
-            <span>Exportar PLE SUNAT</span>
+            <span className="hidden sm:inline">Exportar PLE SUNAT</span>
+            <span className="sm:hidden">PLE</span>
           </button>
           <button
             onClick={() => setNewSaleModalOpen(true)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm shadow-blue-500/25 transition-all hover:shadow-md hover:-translate-y-0.5"
+            className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm shadow-blue-500/25 transition-all hover:shadow-md active:scale-95 shrink-0"
           >
             <Plus className="w-4 h-4" />
-            <span>Emitir Nueva Venta</span>
+            <span>Nueva Venta</span>
           </button>
         </div>
       </div>
 
-      {/* 4 KPI Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-1">
-          <span className="text-xs font-semibold text-slate-400">Total Facturado Bruto</span>
-          <p className="text-2xl font-extrabold text-slate-900 font-mono">
+      {/* 4 KPI Metrics (2x2 grid on mobile) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+        <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs space-y-0.5 sm:space-y-1">
+          <span className="text-[11px] sm:text-xs font-semibold text-slate-400 truncate block">Total Facturado Bruto</span>
+          <p className="text-lg sm:text-2xl font-extrabold text-slate-900 font-mono">
             S/ {totalInvoiced.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
           </p>
-          <span className="text-[11px] font-semibold text-emerald-600 flex items-center gap-1">
-            <TrendingUp className="w-3.5 h-3.5" /> +14.2% respecto a mes ant.
+          <span className="text-[10px] sm:text-[11px] font-semibold text-emerald-600 flex items-center gap-1 truncate">
+            <TrendingUp className="w-3 h-3 shrink-0" /> +14.2% vs. mes ant.
           </span>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-1">
-          <span className="text-xs font-semibold text-slate-400">Base Imponible Neta (70121)</span>
-          <p className="text-2xl font-extrabold text-slate-900 font-mono">
+        <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs space-y-0.5 sm:space-y-1">
+          <span className="text-[11px] sm:text-xs font-semibold text-slate-400 truncate block">Base Neta (70121)</span>
+          <p className="text-lg sm:text-2xl font-extrabold text-slate-900 font-mono">
             S/ {totalSubtotal.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
           </p>
-          <span className="text-[11px] font-semibold text-slate-500">Ingreso real sin impuesto</span>
+          <span className="text-[10px] sm:text-[11px] font-semibold text-slate-500 truncate block">Sin impuesto</span>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-1">
-          <span className="text-xs font-semibold text-slate-400">IGV Débito Fiscal (40111)</span>
-          <p className="text-2xl font-extrabold text-blue-600 font-mono">
+        <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs space-y-0.5 sm:space-y-1">
+          <span className="text-[11px] sm:text-xs font-semibold text-slate-400 truncate block">IGV Débito (40111)</span>
+          <p className="text-lg sm:text-2xl font-extrabold text-blue-600 font-mono">
             S/ {totalIgv.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
           </p>
-          <span className="text-[11px] font-semibold text-blue-600">Impuesto a liquidar 18%</span>
+          <span className="text-[10px] sm:text-[11px] font-semibold text-blue-600 truncate block">Impuesto 18%</span>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-1">
-          <span className="text-xs font-semibold text-slate-400">Cobrado en Bancos / Caja</span>
-          <p className="text-2xl font-extrabold text-emerald-600 font-mono">
+        <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs space-y-0.5 sm:space-y-1">
+          <span className="text-[11px] sm:text-xs font-semibold text-slate-400 truncate block">Cobrado en Bancos</span>
+          <p className="text-lg sm:text-2xl font-extrabold text-emerald-600 font-mono">
             S/ {totalCollected.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
           </p>
-          <span className="text-[11px] font-semibold text-emerald-600">Liquidez disponible</span>
+          <span className="text-[10px] sm:text-[11px] font-semibold text-emerald-600 truncate block">Liquidez disponible</span>
         </div>
       </div>
 

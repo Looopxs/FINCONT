@@ -92,49 +92,51 @@ export default function ContabilidadPage() {
           {entries.map((entry) => (
             <div
               key={entry.num}
-              className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs space-y-3"
+              className="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-xs space-y-3"
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                <div className="flex items-center gap-3">
-                  <span className="text-xs font-bold font-mono px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <span className="text-xs font-bold font-mono px-2 py-0.5 sm:px-2.5 sm:py-1 bg-blue-50 text-blue-700 rounded-lg shrink-0">
                     {entry.num}
                   </span>
-                  <span className="text-xs font-bold text-slate-900">{entry.glosa}</span>
+                  <span className="text-xs font-bold text-slate-900 truncate">{entry.glosa}</span>
                 </div>
-                <span className="text-xs text-slate-400">{entry.date}</span>
+                <span className="text-[11px] sm:text-xs text-slate-400">{entry.date}</span>
               </div>
 
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="text-slate-400 font-semibold text-[11px] border-b border-slate-100">
-                    <th className="py-2 text-left w-20">Cuenta</th>
-                    <th className="py-2 text-left">Denominación PCGE</th>
-                    <th className="py-2 text-right w-28">Debe (S/)</th>
-                    <th className="py-2 text-right w-28">Haber (S/)</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-50 font-medium">
-                  {entry.lines.map((line, idx) => (
-                    <tr key={idx} className="hover:bg-slate-50/50">
-                      <td className="py-2 font-mono font-bold text-blue-600">{line.code}</td>
-                      <td className="py-2 text-slate-700">{line.desc}</td>
-                      <td className="py-2 text-right font-mono text-slate-900">{line.debe}</td>
-                      <td className="py-2 text-right font-mono text-slate-900">{line.haber}</td>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs min-w-[460px]">
+                  <thead>
+                    <tr className="text-slate-400 font-semibold text-[11px] border-b border-slate-100">
+                      <th className="py-2 text-left w-20">Cuenta</th>
+                      <th className="py-2 text-left">Denominación PCGE</th>
+                      <th className="py-2 text-right w-28">Debe (S/)</th>
+                      <th className="py-2 text-right w-28">Haber (S/)</th>
                     </tr>
-                  ))}
-                  <tr className="font-bold bg-slate-50/80 text-slate-900 border-t border-slate-200">
-                    <td colSpan={2} className="py-2 px-2 text-right">
-                      TOTALES CUADRADOS:
-                    </td>
-                    <td className="py-2 text-right font-mono text-emerald-700">
-                      S/ {entry.totalDebe}
-                    </td>
-                    <td className="py-2 text-right font-mono text-emerald-700">
-                      S/ {entry.totalHaber}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50 font-medium">
+                    {entry.lines.map((line, idx) => (
+                      <tr key={idx} className="hover:bg-slate-50/50">
+                        <td className="py-2 font-mono font-bold text-blue-600">{line.code}</td>
+                        <td className="py-2 text-slate-700">{line.desc}</td>
+                        <td className="py-2 text-right font-mono text-slate-900">{line.debe}</td>
+                        <td className="py-2 text-right font-mono text-slate-900">{line.haber}</td>
+                      </tr>
+                    ))}
+                    <tr className="font-bold bg-slate-50/80 text-slate-900 border-t border-slate-200">
+                      <td colSpan={2} className="py-2 px-2 text-right">
+                        TOTALES CUADRADOS:
+                      </td>
+                      <td className="py-2 text-right font-mono text-emerald-700">
+                        S/ {entry.totalDebe}
+                      </td>
+                      <td className="py-2 text-right font-mono text-emerald-700">
+                        S/ {entry.totalHaber}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           ))}
         </div>

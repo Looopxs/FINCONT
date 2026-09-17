@@ -105,31 +105,32 @@ export default function ConfiguracionPage() {
       )}
 
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-slate-900">Configuración del Sistema</h1>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700">
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Configuración del Sistema</h1>
+            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-blue-50 text-blue-700">
               FINCONT v2.4
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Parámetros de empresa, reglas de automatización en cascada, impuestos y copias de seguridad
+          <p className="text-xs text-slate-500 mt-0.5">
+            Parámetros de empresa, reglas de automatización, impuestos y respaldos
           </p>
         </div>
 
         <button
           onClick={handleExportBackup}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-sm transition-all hover:shadow-md self-start sm:self-auto"
+          className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-sm transition-all hover:shadow-md active:scale-95 self-start sm:self-auto shrink-0"
         >
           <Download className="w-3.5 h-3.5" />
-          <span>Exportar Respaldo (.JSON)</span>
+          <span className="hidden sm:inline">Exportar Respaldo (.JSON)</span>
+          <span className="sm:hidden">Respaldo .JSON</span>
         </button>
       </div>
 
       <form onSubmit={handleSaveConfig} className="space-y-6">
         {/* 1. Datos de Empresa */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs space-y-4">
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 p-4 sm:p-6 shadow-xs space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
               <Building2 className="w-4 h-4 text-blue-600" />

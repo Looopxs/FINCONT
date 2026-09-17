@@ -140,56 +140,56 @@ export const ClientManager: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-slate-900">Directorio de Clientes</h1>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-600">
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Directorio de Clientes</h1>
+            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-blue-50 text-blue-600">
               Cartera Cta 1212
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Gestión comercial, saldos pendientes de facturación y trazabilidad de cobranzas
+          <p className="text-xs text-slate-500 mt-0.5">
+            Gestión comercial y trazabilidad de cobranzas
           </p>
         </div>
 
         <button
           onClick={handleOpenCreate}
-          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-sm shadow-blue-500/25 transition-all hover:shadow-md hover:-translate-y-0.5"
+          className="inline-flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-sm shadow-blue-500/25 transition-all hover:shadow-md active:scale-95 self-start sm:self-auto shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span>Nuevo Cliente</span>
         </button>
       </div>
 
-      {/* 4 Financial Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-1">
-          <span className="text-xs font-semibold text-slate-400">Total Clientes</span>
-          <p className="text-2xl font-extrabold text-slate-900 font-mono">{totalClients}</p>
-          <span className="text-[11px] font-semibold text-blue-600">Registrados en el sistema</span>
+      {/* 4 Financial Metric Cards (2x2 grid on mobile) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+        <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs space-y-0.5 sm:space-y-1">
+          <span className="text-[11px] sm:text-xs font-semibold text-slate-400 truncate block">Total Clientes</span>
+          <p className="text-lg sm:text-2xl font-extrabold text-slate-900 font-mono">{totalClients}</p>
+          <span className="text-[10px] sm:text-[11px] font-semibold text-blue-600 truncate block">Registrados</span>
         </div>
 
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-1">
-          <span className="text-xs font-semibold text-slate-400">Total Facturado</span>
-          <p className="text-2xl font-extrabold text-slate-900 font-mono">
+        <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs space-y-0.5 sm:space-y-1">
+          <span className="text-[11px] sm:text-xs font-semibold text-slate-400 truncate block">Total Facturado</span>
+          <p className="text-lg sm:text-2xl font-extrabold text-slate-900 font-mono">
             S/ {totalInvoiced.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
           </p>
-          <span className="text-[11px] font-semibold text-emerald-600">Ventas acumuladas</span>
+          <span className="text-[10px] sm:text-[11px] font-semibold text-emerald-600 truncate block">Ventas acumuladas</span>
         </div>
 
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-1">
-          <span className="text-xs font-semibold text-slate-400">Por Cobrar (Cta 1212)</span>
-          <p className="text-2xl font-extrabold text-amber-600 font-mono">
+        <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs space-y-0.5 sm:space-y-1">
+          <span className="text-[11px] sm:text-xs font-semibold text-slate-400 truncate block">Por Cobrar (1212)</span>
+          <p className="text-lg sm:text-2xl font-extrabold text-amber-600 font-mono">
             S/ {totalPending.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
           </p>
-          <span className="text-[11px] font-semibold text-amber-600">Saldos pendientes</span>
+          <span className="text-[10px] sm:text-[11px] font-semibold text-amber-600 truncate block">Saldos pendientes</span>
         </div>
 
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-1">
-          <span className="text-xs font-semibold text-slate-400">Clientes al Día</span>
-          <p className="text-2xl font-extrabold text-emerald-600 font-mono">{upToDateCount}</p>
-          <span className="text-[11px] font-semibold text-emerald-600">0 deuda pendiente</span>
+        <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs space-y-0.5 sm:space-y-1">
+          <span className="text-[11px] sm:text-xs font-semibold text-slate-400 truncate block">Clientes al Día</span>
+          <p className="text-lg sm:text-2xl font-extrabold text-emerald-600 font-mono">{upToDateCount}</p>
+          <span className="text-[10px] sm:text-[11px] font-semibold text-emerald-600 truncate block">0 deuda pendiente</span>
         </div>
       </div>
 

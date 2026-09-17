@@ -57,64 +57,64 @@ export const OperationsManager: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-slate-900">Operaciones Contables</h1>
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700">
-              <Sparkles className="w-3.5 h-3.5" />
-              Motor de Cascada 100% Activo
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Operaciones Contables</h1>
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-blue-50 text-blue-700">
+              <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              Motor Activo
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Cada registro desencadena automáticamente comprobante, movimiento en bancos/caja, saldos y asiento contable PCGE
+          <p className="text-xs text-slate-500 mt-0.5">
+            Comprobante, banco, saldos y asientos en cascada automática
           </p>
         </div>
 
         <button
           onClick={() => setNewOpModalOpen(true)}
-          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-sm shadow-blue-500/25 transition-all hover:shadow-md hover:-translate-y-0.5"
+          className="inline-flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-sm shadow-blue-500/25 transition-all hover:shadow-md active:scale-95 self-start sm:self-auto shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span>Nueva Operación</span>
         </button>
       </div>
 
-      {/* 4 Financial Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-1">
-          <span className="text-xs font-semibold text-slate-400">Total Operaciones</span>
-          <p className="text-2xl font-extrabold text-slate-900 font-mono">{totalCount}</p>
-          <span className="text-[11px] font-semibold text-emerald-600">100% sincronizadas</span>
+      {/* 4 Financial Metric Cards (2x2 grid on mobile) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+        <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs space-y-0.5 sm:space-y-1">
+          <span className="text-[11px] sm:text-xs font-semibold text-slate-400 truncate block">Total Operaciones</span>
+          <p className="text-lg sm:text-2xl font-extrabold text-slate-900 font-mono">{totalCount}</p>
+          <span className="text-[10px] sm:text-[11px] font-semibold text-emerald-600 truncate block">100% sincronizadas</span>
         </div>
 
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-1">
-          <span className="text-xs font-semibold text-slate-400">Volumen Procesado</span>
-          <p className="text-2xl font-extrabold text-slate-900 font-mono">
+        <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs space-y-0.5 sm:space-y-1">
+          <span className="text-[11px] sm:text-xs font-semibold text-slate-400 truncate block">Volumen Procesado</span>
+          <p className="text-lg sm:text-2xl font-extrabold text-slate-900 font-mono">
             S/ {totalVolume.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
           </p>
-          <span className="text-[11px] font-semibold text-blue-600">Flujo transaccional</span>
+          <span className="text-[10px] sm:text-[11px] font-semibold text-blue-600 truncate block">Flujo transaccional</span>
         </div>
 
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-1">
-          <span className="text-xs font-semibold text-slate-400">Ventas Registradas</span>
-          <p className="text-2xl font-extrabold text-emerald-600 font-mono">
+        <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs space-y-0.5 sm:space-y-1">
+          <span className="text-[11px] sm:text-xs font-semibold text-slate-400 truncate block">Ventas Registradas</span>
+          <p className="text-lg sm:text-2xl font-extrabold text-emerald-600 font-mono">
             S/ {salesVolume.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
           </p>
-          <span className="text-[11px] font-semibold text-emerald-600">Ingresos automáticos</span>
+          <span className="text-[10px] sm:text-[11px] font-semibold text-emerald-600 truncate block">Ingresos automáticos</span>
         </div>
 
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-1">
-          <span className="text-xs font-semibold text-slate-400">Compras Registradas</span>
-          <p className="text-2xl font-extrabold text-amber-600 font-mono">
+        <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs space-y-0.5 sm:space-y-1">
+          <span className="text-[11px] sm:text-xs font-semibold text-slate-400 truncate block">Compras Registradas</span>
+          <p className="text-lg sm:text-2xl font-extrabold text-amber-600 font-mono">
             S/ {purchaseVolume.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
           </p>
-          <span className="text-[11px] font-semibold text-amber-600">Egresos automáticos</span>
+          <span className="text-[10px] sm:text-[11px] font-semibold text-amber-600 truncate block">Egresos automáticos</span>
         </div>
       </div>
 
       {/* Search & Filter Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3">
         <div className="relative flex-1 max-w-md">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
@@ -126,9 +126,9 @@ export const OperationsManager: React.FC = () => {
           />
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
           <span className="text-xs text-slate-400 font-semibold hidden sm:inline">Tipo:</span>
-          <div className="flex rounded-xl border border-slate-200 p-0.5 bg-slate-50 text-xs font-semibold">
+          <div className="flex rounded-xl border border-slate-200 p-0.5 bg-slate-50 text-xs font-semibold whitespace-nowrap">
             {[
               { id: "ALL", label: "Todas" },
               { id: "VENTA", label: "Ventas" },
@@ -138,7 +138,7 @@ export const OperationsManager: React.FC = () => {
               <button
                 key={f.id}
                 onClick={() => setTypeFilter(f.id)}
-                className={`px-3 py-1.5 rounded-lg transition-all ${
+                className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
                   typeFilter === f.id
                     ? "bg-white text-blue-600 shadow-xs font-bold"
                     : "text-slate-600 hover:text-slate-900"

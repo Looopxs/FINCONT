@@ -89,29 +89,31 @@ export default function ComprasPage() {
       )}
 
       {/* Top Bar Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Top Bar Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-slate-900">Registro de Compras y Gastos</h1>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700">
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Registro de Compras y Gastos</h1>
+            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-amber-50 text-amber-700">
               Crédito Fiscal SUNAT
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Control de cuentas por pagar a proveedores y crédito fiscal IGV (6011 - 40111 - 4212 / 1041)
+          <p className="text-xs text-slate-500 mt-0.5">
+            Cuentas por pagar a proveedores y crédito fiscal IGV (6011 - 40111 - 4212)
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
           <button
             onClick={handleExportSunat}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-xs"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-xs shrink-0"
           >
             <Download className="w-3.5 h-3.5 text-slate-400" />
-            <span>Exportar PLE SUNAT</span>
+            <span className="hidden sm:inline">Exportar PLE SUNAT</span>
+            <span className="sm:hidden">PLE</span>
           </button>
           <button
             onClick={() => setNewPurchaseModalOpen(true)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-sm shadow-amber-500/25 transition-all hover:shadow-md hover:-translate-y-0.5"
+            className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-sm shadow-amber-500/25 transition-all hover:shadow-md active:scale-95 shrink-0"
           >
             <Plus className="w-4 h-4" />
             <span>Registrar Compra</span>
@@ -119,38 +121,38 @@ export default function ComprasPage() {
         </div>
       </div>
 
-      {/* 4 KPI Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-1">
-          <span className="text-xs font-semibold text-slate-400">Total Compras del Mes</span>
-          <p className="text-2xl font-extrabold text-slate-900 font-mono">
+      {/* 4 KPI Metrics (2x2 grid on mobile) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+        <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs space-y-0.5 sm:space-y-1">
+          <span className="text-[11px] sm:text-xs font-semibold text-slate-400 truncate block">Total Compras del Mes</span>
+          <p className="text-lg sm:text-2xl font-extrabold text-slate-900 font-mono">
             S/ {totalPurchases.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
           </p>
-          <span className="text-[11px] font-semibold text-slate-500">Total egresos devengados</span>
+          <span className="text-[10px] sm:text-[11px] font-semibold text-slate-500 truncate block">Egresos devengados</span>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-1">
-          <span className="text-xs font-semibold text-slate-400">Base Imponible Gastos (60/63/65)</span>
-          <p className="text-2xl font-extrabold text-slate-900 font-mono">
+        <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs space-y-0.5 sm:space-y-1">
+          <span className="text-[11px] sm:text-xs font-semibold text-slate-400 truncate block">Base Imponible (60/63)</span>
+          <p className="text-lg sm:text-2xl font-extrabold text-slate-900 font-mono">
             S/ {totalSubtotal.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
           </p>
-          <span className="text-[11px] font-semibold text-slate-500">Costo neto de adquisición</span>
+          <span className="text-[10px] sm:text-[11px] font-semibold text-slate-500 truncate block">Costo neto adquisición</span>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-1">
-          <span className="text-xs font-semibold text-slate-400">Crédito Fiscal IGV (40111)</span>
-          <p className="text-2xl font-extrabold text-amber-600 font-mono">
+        <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs space-y-0.5 sm:space-y-1">
+          <span className="text-[11px] sm:text-xs font-semibold text-slate-400 truncate block">Crédito Fiscal (40111)</span>
+          <p className="text-lg sm:text-2xl font-extrabold text-amber-600 font-mono">
             S/ {totalCreditIgv.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
           </p>
-          <span className="text-[11px] font-semibold text-amber-600">Deducción de IGV a favor</span>
+          <span className="text-[10px] sm:text-[11px] font-semibold text-amber-600 truncate block">IGV a favor</span>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-1">
-          <span className="text-xs font-semibold text-slate-400">Desembolsado en Bancos/Caja</span>
-          <p className="text-2xl font-extrabold text-rose-600 font-mono">
+        <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs space-y-0.5 sm:space-y-1">
+          <span className="text-[11px] sm:text-xs font-semibold text-slate-400 truncate block">Desembolsado en Bancos</span>
+          <p className="text-lg sm:text-2xl font-extrabold text-rose-600 font-mono">
             S/ {totalPaid.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
           </p>
-          <span className="text-[11px] font-semibold text-emerald-600">Proveedores al día</span>
+          <span className="text-[10px] sm:text-[11px] font-semibold text-emerald-600 truncate block">Proveedores al día</span>
         </div>
       </div>
 
