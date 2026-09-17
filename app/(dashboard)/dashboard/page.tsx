@@ -11,6 +11,7 @@ import { Sparkles, Building2, CheckCircle2 } from "lucide-react";
 
 export default function DashboardPage() {
   const [lastSyncTime, setLastSyncTime] = useState("Justo ahora");
+  const [mobileTab, setMobileTab] = useState<"todo" | "graficos" | "operaciones" | "alertas">("todo");
 
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-300">
@@ -45,27 +46,99 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* 6 Top KPI Metrics */}
+      {/* 6 Top KPI Metrics (2-cols on mobile for side-by-side comparison) */}
       <KpiCards />
+
+      {/* Mobile Section Tabs (Only visible on mobile/tablet to eliminate infinite scrolling) */}
+      <div className="lg:hidden flex items-center p-1 bg-slate-100/80 rounded-xl border border-slate-200/80 overflow-x-auto no-scrollbar gap-1 text-xs font-semibold text-slate-600 select-none">
+        <button
+          onClick={() => setMobileTab("todo")}
+          className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition-all ${
+            mobileTab === "todo"
+              ? "bg-white text-blue-600 shadow-xs font-bold"
+              : "hover:text-slate-900"
+          }`}
+        >
+          Vista completa
+        </button>
+        <button
+          onClick={() => setMobileTab("graficos")}
+          className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition-all ${
+            mobileTab === "graficos"
+              ? "bg-white text-blue-600 shadow-xs font-bold"
+              : "hover:text-slate-900"
+          }`}
+        >
+          📊 Gráficos y Flujo
+        </button>
+        <button
+          onClick={() => setMobileTab("operaciones")}
+          className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition-all ${
+            mobileTab === "operaciones"
+              ? "bg-white text-blue-600 shadow-xs font-bold"
+              : "hover:text-slate-900"
+          }`}
+        >
+          📋 Operaciones
+        </button>
+        <button
+          onClick={() => setMobileTab("alertas")}
+          className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition-all ${
+            mobileTab === "alertas"
+              ? "bg-white text-blue-600 shadow-xs font-bold"
+              : "hover:text-slate-900"
+          }`}
+        >
+          ⏰ Vencimientos
+        </button>
+      </div>
 
       {/* Main Grid: 8 Cols (Charts, Flow, Table) + 4 Cols (Activity, Dues) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left / Center Column (8 cols) */}
-        <div className="lg:col-span-8 space-y-6">
+        <div
+          className={`lg:col-span-8 space-y-6 ${
+            mobileTab === "alertas" ? "hidden lg:block" : ""
+          }`}
+        >
           {/* Financial Charts: Bar + Donut */}
-          <FinancialCharts />
+          <div
+            className={
+              mobileTab === "operaciones" ? "hidden lg:block" : ""
+            }
+          >
+            <FinancialCharts />
+          </div>
 
           {/* Real-time Automation Flow Stepper */}
-          <AutomationCenterCard
-            onTriggerSim={() => setLastSyncTime("Hace unos segundos")}
-          />
+          <div
+            className={
+              mobileTab === "operaciones" ? "hidden lg:block" : ""
+            }
+          >
+            <AutomationCenterCard
+              onTriggerSim={() => setLastSyncTime("Hace unos segundos")}
+            />
+          </div>
 
           {/* Recent Operations Table */}
-          <RecentOperationsTable />
+          <div
+            className={
+              mobileTab === "graficos" ? "hidden lg:block" : ""
+            }
+          >
+            <RecentOperationsTable />
+          </div>
         </div>
 
         {/* Right Column (4 cols) */}
-        <div className="lg:col-span-4 space-y-6">
+        <div
+          className={`lg:col-span-4 space-y-6 ${
+            mobileTab === "graficos" || mobileTab === "operaciones"
+              ? "hidden lg:block"
+              : ""
+          }`}
+        >
           {/* Live Activity Timeline */}
           <RecentActivity />
 

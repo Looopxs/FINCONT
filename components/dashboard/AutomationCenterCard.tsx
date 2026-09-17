@@ -110,7 +110,7 @@ export const AutomationCenterCard: React.FC<{ onTriggerSim?: () => void }> = ({ 
       </div>
 
       {/* 5-Step Process Horizontal Bar (Matching Image 3) */}
-      <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 relative">
+      <div className="flex sm:grid sm:grid-cols-5 overflow-x-auto gap-2.5 sm:gap-4 pb-2 sm:pb-0 relative">
         {steps.map((step, idx) => {
           const Icon = step.icon;
           const isDone = step.id <= simStep;
@@ -119,7 +119,7 @@ export const AutomationCenterCard: React.FC<{ onTriggerSim?: () => void }> = ({ 
           return (
             <div
               key={step.id}
-              className={`flex flex-col items-center text-center p-3 rounded-xl border transition-all ${
+              className={`flex flex-col items-center text-center p-2.5 sm:p-3 rounded-xl border transition-all shrink-0 w-[135px] sm:w-auto sm:flex-1 ${
                 isCurrent
                   ? "bg-blue-50/60 border-blue-400 shadow-xs scale-102"
                   : isDone

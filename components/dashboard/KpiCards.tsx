@@ -27,7 +27,7 @@ export const KpiCards: React.FC = () => {
       label: "Gastos",
       amount: "S/ 48,230",
       change: "-8% vs. mes anterior",
-      isPositive: true, // Decreasing expense is positive
+      isPositive: true,
       icon: TrendingDown,
       iconColor: "text-rose-500 bg-rose-50",
       tooltip: "Compras de mercaderías, suministros y servicios",
@@ -40,6 +40,15 @@ export const KpiCards: React.FC = () => {
       icon: Landmark,
       iconColor: "text-blue-600 bg-blue-50",
       tooltip: "Cuenta Corriente Operativa BBVA (1041)",
+    },
+    {
+      label: "Resultado periodo",
+      amount: "S/ 56,320",
+      change: "+18% vs. mes anterior",
+      isPositive: true,
+      icon: BarChart3,
+      iconColor: "text-sky-600 bg-sky-50",
+      tooltip: "Utilidad operativa neta del trimestre",
     },
     {
       label: "Cuentas por cobrar",
@@ -59,47 +68,38 @@ export const KpiCards: React.FC = () => {
       iconColor: "text-amber-600 bg-amber-50",
       tooltip: "Facturas de proveedores pendientes de pago (4212)",
     },
-    {
-      label: "Resultado del periodo",
-      amount: "S/ 56,320",
-      change: "+18% vs. mes anterior",
-      isPositive: true,
-      icon: BarChart3,
-      iconColor: "text-sky-600 bg-sky-50",
-      tooltip: "Utilidad operativa neta del trimestre",
-    },
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3.5 sm:gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-2.5 sm:gap-4">
       {kpis.map((kpi, idx) => {
         const Icon = kpi.icon;
         return (
           <div
             key={idx}
-            className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(15,23,42,0.04)] hover:shadow-md transition-all group select-none"
+            className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(15,23,42,0.04)] hover:shadow-md transition-all group select-none flex flex-col justify-between"
           >
             {/* Top row: Label & Icon */}
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-slate-500 group-hover:text-slate-700 transition-colors">
+            <div className="flex items-center justify-between mb-1 sm:mb-2">
+              <span className="text-[11px] sm:text-xs font-semibold text-slate-500 group-hover:text-slate-700 transition-colors truncate pr-1">
                 {kpi.label}
               </span>
               <div
-                className={`w-7 h-7 rounded-xl flex items-center justify-center ${kpi.iconColor}`}
+                className={`w-6 h-6 sm:w-7 sm:h-7 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0 ${kpi.iconColor}`}
               >
-                <Icon className="w-3.5 h-3.5" />
+                <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               </div>
             </div>
 
             {/* Amount */}
-            <p className="text-xl font-extrabold text-slate-900 tracking-tight">
+            <p className="text-base sm:text-xl font-extrabold text-slate-900 tracking-tight">
               {kpi.amount}
             </p>
 
             {/* Variation pill */}
-            <div className="flex items-center gap-1 mt-1.5">
-              <TrendingUp className="w-3 h-3 text-emerald-600 flex-shrink-0" />
-              <span className="text-[11px] font-semibold text-emerald-600">
+            <div className="flex items-center gap-1 mt-1 sm:mt-1.5">
+              <TrendingUp className="w-3 h-3 text-emerald-600 shrink-0" />
+              <span className="text-[10px] sm:text-[11px] font-semibold text-emerald-600 truncate">
                 {kpi.change}
               </span>
             </div>
