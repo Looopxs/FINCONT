@@ -62,15 +62,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [company, setCompany] = useState<CompanyProfile>(DEFAULT_COMPANY);
 
   useEffect(() => {
-    // Check localStorage if available
-    try {
-      const savedUser = localStorage.getItem("fincont_user");
-      const savedCompany = localStorage.getItem("fincont_company");
-      if (savedUser) setUser(JSON.parse(savedUser));
-      if (savedCompany) setCompany(JSON.parse(savedCompany));
-    } catch {
-      // ignore
-    }
+    const loadAuth = () => {
+      try {
+        const savedUser = localStorage.getItem("fincont_user");
+        const savedCompany = localStorage.getItem("fincont_company");
+        if (savedUser) setUser(JSON.parse(savedUser));
+        if (savedCompany) setCompany(JSON.parse(savedCompany));
+      } catch {
+        // ignore
+      }
+    };
+
+    loadAuth();
+
+    const handleAuthChange = () => {
+      loadAuth();
+    };
+
+    window.addEventListener("fincont_auth_updated", handleAuthChange);
+    window.addEventListener("storage", handleAuthChange);
+    return () => {
+      window.removeEventListener("fincont_auth_updated", handleAuthChange);
+      window.removeEventListener("storage", handleAuthChange);
+    };
   }, []);
 
   const login = (email: string) => {

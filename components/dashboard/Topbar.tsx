@@ -14,6 +14,7 @@ import {
   Building2,
   Menu,
 } from "lucide-react";
+import { useAuth } from "@/lib/auth/auth-context";
 
 interface TopbarProps {
   onNewOperationClick?: () => void;
@@ -21,8 +22,14 @@ interface TopbarProps {
 }
 
 export const Topbar: React.FC<TopbarProps> = ({ onNewOperationClick, onToggleMobileMenu }) => {
+  const { user, company, logout } = useAuth();
   const [period, setPeriod] = useState("Enero 2024 - Marzo 2024");
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+
+  const displayName = user ? `${user.name} ${user.lastName}`.trim() : "Juan Martínez";
+  const displayInitials = user?.avatarInitials || (user ? `${user.name?.[0] || ""}${user.lastName?.[0] || ""}`.toUpperCase() : "JM");
+  const displayCompany = company?.commercialName || company?.legalName || "Empresa Demo S.A.";
+  const displayLegalName = company?.legalName || "Libertad S.A.";
 
   return (
     <header className="h-18 bg-white border-b border-slate-200/80 px-3.5 sm:px-6 flex items-center justify-between sticky top-0 z-30 select-none">
@@ -87,23 +94,23 @@ export const Topbar: React.FC<TopbarProps> = ({ onNewOperationClick, onToggleMob
             className="flex items-center gap-2.5 p-1 sm:pl-2 rounded-xl hover:bg-slate-50 transition-colors text-left"
           >
             <div className="w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
-              JM
+              {displayInitials}
             </div>
             <div className="hidden md:block">
-              <p className="text-xs font-bold text-slate-900 leading-tight">Juan Martínez</p>
-              <p className="text-[10px] text-slate-400 font-medium">Empresa Demo S.A.</p>
+              <p className="text-xs font-bold text-slate-900 leading-tight">{displayName}</p>
+              <p className="text-[10px] text-slate-400 font-medium truncate max-w-[130px]">{displayCompany}</p>
             </div>
             <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden sm:block" />
           </button>
 
           {/* User Dropdown Menu */}
           {userDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-52 bg-white rounded-2xl border border-slate-200 shadow-xl p-2 space-y-1 animate-in fade-in slide-in-from-top-2 duration-150 z-50">
+            <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl border border-slate-200 shadow-xl p-2 space-y-1 animate-in fade-in slide-in-from-top-2 duration-150 z-50">
               <div className="p-2 border-b border-slate-100">
-                <p className="text-xs font-bold text-slate-900">Juan Martínez</p>
-                <p className="text-[11px] text-slate-400">Administrador General</p>
-                <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-                  <Building2 className="w-3 h-3" /> Libertad S.A.
+                <p className="text-xs font-bold text-slate-900">{displayName}</p>
+                <p className="text-[11px] text-slate-400">{user?.role || "Administrador General"}</p>
+                <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full truncate max-w-full">
+                  <Building2 className="w-3 h-3 shrink-0" /> {displayLegalName}
                 </span>
               </div>
               <Link
@@ -114,14 +121,17 @@ export const Topbar: React.FC<TopbarProps> = ({ onNewOperationClick, onToggleMob
                 <User className="w-3.5 h-3.5 text-slate-400" />
                 <span>Perfil y Empresa</span>
               </Link>
-              <Link
-                href="/login"
-                onClick={() => setUserDropdownOpen(false)}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-red-600 hover:bg-red-50 transition-colors"
+              <button
+                onClick={() => {
+                  logout();
+                  setUserDropdownOpen(false);
+                  window.location.href = "/login";
+                }}
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-red-600 hover:bg-red-50 transition-colors text-left"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span>Cerrar sesión</span>
-              </Link>
+              </button>
             </div>
           )}
         </div>

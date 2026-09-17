@@ -117,8 +117,40 @@ export default function RegisterPage() {
       return;
     }
 
-    setLoading(true);
-    setError("");
+    // Build user and company profiles
+    const initials = (
+      (userForm.name?.[0] || "U") + (userForm.lastName?.[0] || "P")
+    ).toUpperCase();
+
+    const finalUser = {
+      id: "usr-" + Date.now(),
+      name: userForm.name.trim() || "Usuario",
+      lastName: userForm.lastName.trim() || "",
+      email: userForm.email.trim(),
+      role: "ADMINISTRADOR",
+      avatarInitials: initials,
+    };
+
+    const finalCompany = {
+      id: "comp-" + Date.now(),
+      legalName: companyForm.legalName.trim(),
+      commercialName: companyForm.commercialName?.trim() || companyForm.legalName.trim(),
+      taxId: companyForm.taxId.trim(),
+      address: companyForm.address.trim(),
+      phone: companyForm.phone.trim(),
+      email: companyForm.email.trim(),
+      currency: companyForm.currency || "PEN",
+      currencySymbol: companyForm.currency === "USD" ? "$" : "S/",
+      accountingPeriod: companyForm.accountingPeriod.trim() || "2025 - Diciembre",
+    };
+
+    try {
+      localStorage.setItem("fincont_user", JSON.stringify(finalUser));
+      localStorage.setItem("fincont_company", JSON.stringify(finalCompany));
+      window.dispatchEvent(new Event("fincont_auth_updated"));
+    } catch (err) {
+      console.error("Error saving auth data:", err);
+    }
 
     setTimeout(() => {
       setLoading(false);

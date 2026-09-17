@@ -29,12 +29,23 @@ export default function ConfiguracionPage() {
   const [backupSuccess, setBackupSuccess] = useState(false);
 
   // Form states
-  const [legalName, setLegalName] = useState("LIBERTAD S.A.");
-  const [commercialName, setCommercialName] = useState("FINCONT Demo S.A.C.");
-  const [ruc, setRuc] = useState("20304050601");
-  const [address, setAddress] = useState("Calle Industrial 2429 - Trujillo, Perú");
-  const [phone, setPhone] = useState("+51 (044) 284-920");
-  const [email, setEmail] = useState("contacto@libertad.pe");
+  const [legalName, setLegalName] = useState(company?.legalName || "LIBERTAD S.A.");
+  const [commercialName, setCommercialName] = useState(company?.commercialName || "FINCONT Demo S.A.C.");
+  const [ruc, setRuc] = useState(company?.taxId || "20304050601");
+  const [address, setAddress] = useState(company?.address || "Calle Industrial 2429 - Trujillo, Perú");
+  const [phone, setPhone] = useState(company?.phone || "+51 (044) 284-920");
+  const [email, setEmail] = useState(company?.email || "contacto@libertad.pe");
+
+  React.useEffect(() => {
+    if (company) {
+      setLegalName(company.legalName || "LIBERTAD S.A.");
+      setCommercialName(company.commercialName || "FINCONT Demo S.A.C.");
+      setRuc(company.taxId || "20304050601");
+      setAddress(company.address || "Calle Industrial 2429 - Trujillo, Perú");
+      setPhone(company.phone || "+51 (044) 284-920");
+      setEmail(company.email || "contacto@libertad.pe");
+    }
+  }, [company]);
 
   // Rules states
   const [autoJournal, setAutoJournal] = useState(true);
@@ -48,6 +59,21 @@ export default function ConfiguracionPage() {
 
   const handleSaveConfig = (e: React.FormEvent) => {
     e.preventDefault();
+    const updatedCompany = {
+      ...company,
+      legalName,
+      commercialName,
+      taxId: ruc,
+      address,
+      phone,
+      email,
+    };
+    try {
+      localStorage.setItem("fincont_company", JSON.stringify(updatedCompany));
+      window.dispatchEvent(new Event("fincont_auth_updated"));
+    } catch (err) {
+      console.error(err);
+    }
     setSavedSuccess(true);
     setTimeout(() => setSavedSuccess(false), 3000);
   };

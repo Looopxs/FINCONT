@@ -8,10 +8,16 @@ import { RecentOperationsTable } from "@/components/dashboard/RecentOperationsTa
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { UpcomingDue } from "@/components/dashboard/UpcomingDue";
 import { Sparkles, Building2, CheckCircle2, RefreshCw } from "lucide-react";
+import { useAuth } from "@/lib/auth/auth-context";
 
 export default function DashboardPage() {
+  const { user, company } = useAuth();
   const [lastSyncTime, setLastSyncTime] = useState("Justo ahora");
   const [mobileTab, setMobileTab] = useState<"todo" | "graficos" | "operaciones" | "alertas">("todo");
+
+  const userName = user?.name || "Juan";
+  const companyTitle = company?.legalName || "Libertad S.A.";
+  const companyRuc = company?.taxId || "20304050601";
 
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-300">
@@ -20,7 +26,7 @@ export default function DashboardPage() {
         <div className="space-y-1.5">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight">
-              ¡Hola, Juan! Bienvenido a FINCONT
+              ¡Hola, {userName}! Bienvenido a FINCONT
             </h1>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-600 border border-blue-100 shrink-0">
               <Sparkles className="w-3.5 h-3.5" />
@@ -30,7 +36,7 @@ export default function DashboardPage() {
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm text-slate-500">
             <span className="flex items-center gap-1 font-semibold text-slate-700">
               <Building2 className="w-4 h-4 text-blue-600 shrink-0" />
-              Libertad S.A. (RUC 20304050601)
+              {companyTitle} (RUC {companyRuc})
             </span>
             <span className="hidden sm:inline text-slate-300">•</span>
             <span className="flex items-center gap-1 text-emerald-600 font-semibold">
