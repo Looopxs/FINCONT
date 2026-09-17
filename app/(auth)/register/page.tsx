@@ -18,7 +18,10 @@ import {
   ArrowLeft,
   CheckCircle2,
   Sparkles,
+  Loader2,
+  CreditCard,
 } from "lucide-react";
+import { lookupDocument } from "@/lib/services/reniec-sunat-service";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -27,9 +30,10 @@ export default function RegisterPage() {
 
   // User details
   const [userForm, setUserForm] = useState({
-    name: "Juan",
-    lastName: "Martínez",
-    email: "juan.martinez@empresa.pe",
+    dni: "",
+    name: "Cristhian",
+    lastName: "Puescas",
+    email: "cristhianpuescas@gmail.com",
     password: "",
     confirmPassword: "",
   });
@@ -47,6 +51,50 @@ export default function RegisterPage() {
   });
 
   const [error, setError] = useState("");
+  const [lookingUpDni, setLookingUpDni] = useState(false);
+  const [dniStatus, setDniStatus] = useState<string | null>(null);
+  const [lookingUpRuc, setLookingUpRuc] = useState(false);
+  const [rucStatus, setRucStatus] = useState<string | null>(null);
+
+  const handleDniChange = async (val: string) => {
+    const clean = val.replace(/\D/g, "");
+    setUserForm((prev) => ({ ...prev, dni: clean }));
+    setDniStatus(null);
+
+    if (clean.length === 8) {
+      setLookingUpDni(true);
+      const res = await lookupDocument("DNI", clean);
+      setLookingUpDni(false);
+      if (res.success) {
+        setUserForm((prev) => ({
+          ...prev,
+          name: res.nombres || prev.name,
+          lastName: `${res.apellidoPaterno || ""} ${res.apellidoMaterno || ""}`.trim() || prev.lastName,
+        }));
+        setDniStatus("✓ RENIEC verificado");
+      }
+    }
+  };
+
+  const handleRucChange = async (val: string) => {
+    const clean = val.replace(/\D/g, "");
+    setCompanyForm((prev) => ({ ...prev, taxId: clean }));
+    setRucStatus(null);
+
+    if (clean.length === 11) {
+      setLookingUpRuc(true);
+      const res = await lookupDocument("RUC", clean);
+      setLookingUpRuc(false);
+      if (res.success && res.name) {
+        setCompanyForm((prev) => ({
+          ...prev,
+          legalName: res.name,
+          address: res.address || prev.address,
+        }));
+        setRucStatus("✓ SUNAT Activo y Habido");
+      }
+    }
+  };
 
   const handleStep1 = (e: React.FormEvent) => {
     e.preventDefault();
@@ -183,7 +231,37 @@ export default function RegisterPage() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
+              {/* DNI with RENIEC Auto-fill */}
+              <div className="space-y-1.5 pt-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-slate-700">DNI (Autocompletar con RENIEC)</label>
+                  {lookingUpDni && (
+                    <span className="text-[10px] text-blue-600 flex items-center gap-1 font-semibold animate-pulse">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      Consultando RENIEC...
+                    </span>
+                  )}
+                  {dniStatus && !lookingUpDni && (
+                    <span className="text-[10px] text-emerald-600 flex items-center gap-1 font-bold">
+                      <CheckCircle2 className="w-3 h-3" />
+                      {dniStatus}
+                    </span>
+                  )}
+                </div>
+                <div className="relative">
+                  <CreditCard className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                  <input
+                    type="text"
+                    maxLength={8}
+                    value={userForm.dni}
+                    onChange={(e) => handleDniChange(e.target.value)}
+                    placeholder="Ingresa tu DNI (8 dígitos) para autocompletar tus nombres"
+                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-slate-700">Nombres *</label>
                   <div className="relative">
@@ -296,7 +374,40 @@ export default function RegisterPage() {
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
+              {/* RUC Input with SUNAT auto-complete */}
+              <div className="space-y-1.5 pt-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-slate-700">
+                    RUC / Identificación fiscal * (Autocompletar con SUNAT)
+                  </label>
+                  {lookingUpRuc && (
+                    <span className="text-[10px] text-blue-600 flex items-center gap-1 font-semibold animate-pulse">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      Consultando SUNAT...
+                    </span>
+                  )}
+                  {rucStatus && !lookingUpRuc && (
+                    <span className="text-[10px] text-emerald-600 flex items-center gap-1 font-bold">
+                      <CheckCircle2 className="w-3 h-3" />
+                      {rucStatus}
+                    </span>
+                  )}
+                </div>
+                <div className="relative">
+                  <FileBadge className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                  <input
+                    type="text"
+                    required
+                    maxLength={11}
+                    value={companyForm.taxId}
+                    onChange={(e) => handleRucChange(e.target.value)}
+                    placeholder="Ingresa tu RUC (11 dígitos) para autocompletar razón social"
+                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-mono font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-slate-700">Razón social *</label>
                   <div className="relative">
@@ -307,7 +418,7 @@ export default function RegisterPage() {
                       value={companyForm.legalName}
                       onChange={(e) => setCompanyForm({ ...companyForm, legalName: e.target.value })}
                       placeholder="LIBERTAD S.A."
-                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-xs"
+                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-xs"
                     />
                   </div>
                 </div>
@@ -326,19 +437,15 @@ export default function RegisterPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-700">
-                    RUC / Identificación fiscal *
-                  </label>
+                  <label className="text-xs font-semibold text-slate-700">Dirección fiscal</label>
                   <div className="relative">
-                    <FileBadge className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                    <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
                     <input
                       type="text"
-                      required
-                      maxLength={11}
-                      value={companyForm.taxId}
-                      onChange={(e) => setCompanyForm({ ...companyForm, taxId: e.target.value })}
-                      placeholder="20304050601"
-                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-xs"
+                      value={companyForm.address}
+                      onChange={(e) => setCompanyForm({ ...companyForm, address: e.target.value })}
+                      placeholder="Calle Industrial 2429 - Trujillo, Perú"
+                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-xs"
                     />
                   </div>
                 </div>
@@ -355,20 +462,6 @@ export default function RegisterPage() {
                       className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-xs"
                     />
                   </div>
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-700">Dirección fiscal</label>
-                <div className="relative">
-                  <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
-                  <input
-                    type="text"
-                    value={companyForm.address}
-                    onChange={(e) => setCompanyForm({ ...companyForm, address: e.target.value })}
-                    placeholder="Calle Industrial 2429 - Trujillo, Perú"
-                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-xs"
-                  />
                 </div>
               </div>
 
